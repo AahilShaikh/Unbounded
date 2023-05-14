@@ -6,9 +6,6 @@ import java.awt.*;
  * Contains constant tile objects, to avoid having to remake the same tiles in different parts of
  * the code.
  * <p>
- * You are free to (and encouraged to) create and add your own tiles to this file. This file will
- * be turned in with the rest of your code.
- * <p>
  * Ex:
  * world[x][y] = Tileset.FLOOR;
  * <p>
