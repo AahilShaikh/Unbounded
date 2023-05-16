@@ -38,9 +38,9 @@ public class GameStateManager implements Serializable {
             startUserInput();
             return;
         }
-//        worldEngine.createDungeon(100, Tileset.NOTHING.copyOf(),
-//                Tileset.FLOOR.copyOf(), Tileset.WALL.copyOf());
-        worldEngine.createOutside(Tileset.TREE, Tileset.TEST_SQUARE, Tileset.MOUNTAIN);
+        worldEngine.createDungeon(100, Tileset.NOTHING.copyOf(),
+                Tileset.FLOOR.copyOf(), Tileset.WALL.copyOf());
+//        worldEngine.createOutside(Tileset.TREE, Tileset.TEST_SQUARE, Tileset.MOUNTAIN);
         worldEngine.createPlayer();
         TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getMap(),
                 GameServices.getInstance().getPlayer().currentLocation(), GameServices.getInstance().getPlayer(),

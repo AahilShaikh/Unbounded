@@ -23,7 +23,7 @@ import java.util.Random;
  */
 
 public class TETile implements Serializable {
-    private final char character; // Do not rename character or the autograder will break.
+    private final char character;
     private Color textColor;
     private Color backgroundColor;
     private Color baseTextColor;
@@ -47,6 +47,7 @@ public class TETile implements Serializable {
         this.backgroundColor = backgroundColor;
         this.description = description;
         this.filepath = filepath;
+        System.out.println("Construcotr" + filepath);
         this.baseBackgroundColor = backgroundColor;
         this.baseTextColor = textColor;
     }
@@ -97,9 +98,10 @@ public class TETile implements Serializable {
             } catch (IllegalArgumentException e) {
                 // Exception happens because the file can't be found. In this case, fail silently
                 // and just use the character and background color for the tile.
+                System.out.println("Cannot find image path");
+                throw e;
             }
         }
-
         StdDraw.setPenColor(backgroundColor);
         StdDraw.filledSquare(x + 0.5, y + 0.5, 0.5);
         StdDraw.setPenColor(textColor);
@@ -255,7 +257,7 @@ public class TETile implements Serializable {
     }
 
     public TETile copyOf() {
-        return new TETile(character, textColor, baseBackgroundColor, description);
+        return new TETile(character, textColor, baseBackgroundColor, description, filepath);
     }
 
     public int getShade() {

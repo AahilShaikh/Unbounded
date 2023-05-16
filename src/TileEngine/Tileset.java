@@ -1,6 +1,7 @@
 package TileEngine;
 
 import java.awt.*;
+import java.io.File;
 
 /**
  * Contains constant tile objects, to avoid having to remake the same tiles in different parts of
@@ -33,9 +34,10 @@ public class Tileset {
     public static final TETile SAND = new TETile('▒', Color.yellow, baseColor, "sand");
     public static final TETile MOUNTAIN = new TETile('▲', Color.gray, baseColor, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, baseColor, "tree");
-    public static final TETile MONSTER = new TETile('M', Color.RED, baseColor, "Monster");
+    public static final TETile MONSTER = new TETile('M', Color.RED, baseColor, "Monster",
+            "./src/Assets/monster.png");
     public static final TETile ATTACKED_MONSTER = new TETile('M', Color.WHITE, baseColor,
-            "Monster");
+            "Monster", "./src/Assets/attackedMonster.png");
     public static final TETile LIGHT = new TETile('O', Color.WHITE, baseColor,
             "Lamp");
     public static final TETile TROPHY = new TETile('þ', Color.YELLOW, baseColor,
