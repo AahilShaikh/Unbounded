@@ -29,7 +29,7 @@ public class Chunk implements Serializable {
 
     private final ArrayList<Room> rooms;
 
-    Chunk(TETile[][] map, List<Interactable> interactables, List<Monster> mobs,
+    public Chunk(TETile[][] map, List<Interactable> interactables, List<Monster> mobs,
           ChunkData chunkData, ArrayList<Room> rooms) {
         this.map = map;
         this.interactables = interactables;

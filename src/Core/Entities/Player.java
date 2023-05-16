@@ -14,7 +14,9 @@ import edu.princeton.cs.algs4.StdDraw;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a player in the game
@@ -123,11 +125,21 @@ public class Player implements Entity, Serializable {
         this.AVATAR = avatar;
         this.currHealth = health;
         this.maxHealth = health;
-        Point p = this.floorGen.getRooms().stream()
-                .filter((Room room) -> !room.isLocked()).findFirst().get().getCenter();
-        this.currentLoc = p;
+        Optional<Room> p = this.floorGen.getRooms().stream()
+                .filter((Room room) -> !room.isLocked()).findFirst();
+        if(p.isPresent()) {
+            this.currentLoc = p.get().getCenter();
+        } else {
+            for(int row = 0; row < this.floorGen.getMap().length; row++) {
+                for(int col = 0; col < this.floorGen.getMap()[0].length; col++) {
+                    if(this.floorGen.getMap()[row][col].equals(this.floorGen.getChunkData().FLOOR())) {
+                        this.currentLoc = new Point(row, col);
+                    }
+                }
+            }
+        }
         this.tileCurrentlyOn = floorGen.getChunkData().FLOOR().copyOf();
-        this.floorGen.setTileCopy(p, AVATAR);
+        this.floorGen.setTileCopy(currentLoc, AVATAR);
         this.mana = mana;
         this.maxMana = mana;
     }

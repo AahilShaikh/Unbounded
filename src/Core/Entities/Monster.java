@@ -6,7 +6,6 @@ import Core.DataStructures.Direction;
 import Core.DataStructures.Point;
 import Core.DataStructures.Tile;
 import Core.GameServices;
-import Core.Generator;
 import TileEngine.TERenderer;
 import TileEngine.TETile;
 import TileEngine.Tileset;

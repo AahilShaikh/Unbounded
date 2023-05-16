@@ -2,6 +2,8 @@ package Core;
 
 import Core.DataStructures.ChunkData;
 import Core.Entities.Player;
+import Core.Generators.DungeonGenerator;
+import Core.Generators.OutsideGenerator;
 import TileEngine.TERenderer;
 import TileEngine.TETile;
 import TileEngine.Tileset;
@@ -48,9 +50,25 @@ public class WorldEngine implements Serializable {
      * @param floor     The floor tile of the floor.
      * @param wall      The wall tile of the floor.
      */
-    public void createFloor(int roomTries, TETile base, TETile floor, TETile wall) {
+    public void createDungeon(int roomTries, TETile base, TETile floor, TETile wall) {
         long floorSeed = worldEngineRng.nextInt();
         currentChunk = new DungeonGenerator(floorSeed, roomTries,
+                TERenderer.getInstance().getStageWidth(),
+                TERenderer.getInstance().getStageHeight(), new ChunkData(worldEngineRng.nextInt(),
+                worldEngineRng.nextInt(), worldEngineRng.nextInt(),
+                worldEngineRng.nextInt(), floorSeed, floor, wall, base)).generate();
+    }
+
+    /**
+     * Creates a floor.
+     *
+     * @param base      The base tile of the floor.
+     * @param floor     The floor tile of the floor.
+     * @param wall      The wall tile of the floor.
+     */
+    public void createOutside(TETile base, TETile floor, TETile wall) {
+        long floorSeed = worldEngineRng.nextInt();
+        currentChunk = new OutsideGenerator(floorSeed,
                 TERenderer.getInstance().getStageWidth(),
                 TERenderer.getInstance().getStageHeight(), new ChunkData(worldEngineRng.nextInt(),
                 worldEngineRng.nextInt(), worldEngineRng.nextInt(),

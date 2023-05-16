@@ -2,14 +2,12 @@ package Core.Entities;
 
 import Core.Chunk;
 import Core.DataStructures.Point;
-import Core.DataStructures.Tile;
 import Core.GameServices;
-import Core.Generator;
+import Core.Generators.Generator;
 import TileEngine.TETile;
 import TileEngine.Tileset;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Key implements Interactable, Serializable {
     private final Point currLoc;

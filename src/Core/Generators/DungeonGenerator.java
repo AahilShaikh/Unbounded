@@ -1,7 +1,9 @@
-package Core;
+package Core.Generators;
 
+import Core.Chunk;
 import Core.DataStructures.*;
 import Core.Entities.*;
+import Core.Generators.Generator;
 import TileEngine.TETile;
 import TileEngine.Tileset;
 
@@ -11,46 +13,20 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class DungeonGenerator implements Generator{
-    
-    private final Random rng;
+public class DungeonGenerator extends Generator {
     /**
-     * The amount of tries it will take to generate rooms.
-     * Room generation uses tries instead of a fixed number of rooms for performance reasons.
+     * The amount of tries it will take to generate getRooms().
+     * Room generation uses tries instead of a fixed number of getRooms() for performance reasons.
      */
     private final int maxRoomTries;
-
-    /**
-     * 2d array that represents the world.
-     */
-    private final TETile[][] map;
-    /**
-     * A list of all the locations of room.
-     */
-    private final ArrayList<Room> rooms;
-
-    /**
-     * List of interactables on the dungeon.
-     */
-    private final List<Interactable> interactables = new CopyOnWriteArrayList<>();
-
-    private final List<Monster> mobs = new CopyOnWriteArrayList<>();
-    
-    private final ChunkData chunkData;
     
     public DungeonGenerator(long seed, int maxRoomTries, int width, int height, ChunkData chunkData) {
-        rng = new Random(seed);
+        super(seed, width, height, chunkData);
         this.maxRoomTries = maxRoomTries;
-        this.chunkData = chunkData;
-        this.map = new TETile[width][height];
-        this.rooms = new ArrayList<>();
     }
 
-    /**
-     * Generates the dungeon.
-     */
     public Chunk generate() {
-        fillWith(chunkData.BASE());
+        fillWith(getChunkData().BASE());
         //build the dungeon
         addRooms();
         buildPaths();
@@ -58,43 +34,28 @@ public class DungeonGenerator implements Generator{
         //remove unnecessary tiles
         removeUnnecessaryTiles();
         fillInCorners();
-        //populate the monster with entities and interactables
+        //populate the monster with entities and getInteractables()
         populateMonsters();
         placeLamps();
-        return new Chunk(map, interactables, mobs, chunkData, rooms);
+        return new Chunk(getMap(), getInteractables(), getMobs(), getChunkData(), getRooms());
     }
 
     /**
-     * Fills the map with a specific tile.
-     * Should be used to create the background.
-     *
-     * @param tile the tile used to fill the background
-     */
-    private void fillWith(TETile tile) {
-        for (int x = 0; x < map.length; x++) {
-            for (int y = 0; y < map[0].length; y++) {
-                setTileCopy(new Point(x, y), tile);
-            }
-        }
-    }
-
-
-    /**
-     * Adds rooms to the current dungeon. Tries for [maxRoomTries] to place rooms randomly.
+     * Adds getRooms() to the current dungeon. Tries for [maxRoomTries] to place getRooms() randomly.
      * Rooms are assigned sizes and locations randomly. If a room already exists in a location,
      * the new room will not be placed there.
      */
     public void addRooms() {
         for (int i = 0; i < maxRoomTries; i++) {
             //create random room dimensions
-            int width = rng.nextInt(8, 18);
-            int height = rng.nextInt(8, 18);
-            int x = rng.nextInt(0, ((map.length - width) / 2) * 2 + 1);
-            int y = rng.nextInt(0, ((map[0].length - height) / 2) * 2 + 1);
-            //check if the room overlaps with other rooms
+            int width = getRng().nextInt(8, 18);
+            int height = getRng().nextInt(8, 18);
+            int x = getRng().nextInt(0, ((getMap().length - width) / 2) * 2 + 1);
+            int y = getRng().nextInt(0, ((getMap()[0].length - height) / 2) * 2 + 1);
+            //check if the room overlaps with other getRooms()
             Room room = new Room(x, y, width, height);
             boolean overlap = false;
-            for (Room other : rooms) {
+            for (Room other : getRooms()) {
                 if (room.distanceFrom(other) <= 0) {
                     overlap = true;
                     break;
@@ -103,8 +64,8 @@ public class DungeonGenerator implements Generator{
             if (overlap) {
                 continue;
             }
-            //add rooms to list of rooms already added
-            rooms.add(room);
+            //add getRooms() to list of getRooms() already added
+            getRooms().add(room);
             buildRoom(room);
         }
     }
@@ -123,28 +84,28 @@ public class DungeonGenerator implements Generator{
         for (int xPos = x; xPos < x + width; xPos++) {
             for (int yPos = y; yPos < y + height; yPos++) {
                 if (xPos == room.getX()) {
-                    setTileCopy(new Point(xPos, yPos), chunkData.WALL());
+                    setTileCopy(new Point(xPos, yPos), getChunkData().WALL());
                 } else if (xPos >= room.getX() + room.getWidth() - 1) {
-                    setTileCopy(new Point(xPos, yPos), chunkData.WALL());
+                    setTileCopy(new Point(xPos, yPos), getChunkData().WALL());
                 } else if (yPos == room.getY()) {
-                    setTileCopy(new Point(xPos, yPos), chunkData.WALL());
+                    setTileCopy(new Point(xPos, yPos), getChunkData().WALL());
                 } else if (yPos >= room.getY() + room.getHeight() - 1) {
-                    setTileCopy(new Point(xPos, yPos), chunkData.WALL());
+                    setTileCopy(new Point(xPos, yPos), getChunkData().WALL());
                 } else {
-                    setTileCopy(new Point(xPos, yPos), chunkData.FLOOR());
+                    setTileCopy(new Point(xPos, yPos), getChunkData().FLOOR());
                 }
             }
         }
     }
 
     /**
-     * Builds the paths between rooms. Each path is built one tile at a time, based on the
+     * Builds the paths between getRooms(). Each path is built one tile at a time, based on the
      * starting points pythagorean distance from the end point.
      */
     private void buildPaths() {
-        for (int q = 0; q < rooms.size(); q++) {
-            Room r1 = rooms.get(q);
-            Room r2 = rooms.get((q + 1) % rooms.size());
+        for (int q = 0; q < getRooms().size(); q++) {
+            Room r1 = getRooms().get(q);
+            Room r2 = getRooms().get((q + 1) % getRooms().size());
             Point start = r1.getCenter();
             Point end = r2.getCenter();
             //use prevDir to make the path less windy -> forces paths to make right angle turns
@@ -172,7 +133,7 @@ public class DungeonGenerator implements Generator{
                     prevDir = getDirection(start, possibleMoves.get(fastestPath));
                     start = possibleMoves.get(fastestPath);
                 }
-                setTileCopy(start, chunkData.FLOOR());
+                setTileCopy(start, getChunkData().FLOOR());
             }
         }
         buildPathWalls();
@@ -182,25 +143,25 @@ public class DungeonGenerator implements Generator{
      * Builds the walls of the paths
      */
     private void buildPathWalls() {
-        for (int x = 0; x < map.length; x++) {
-            for (int y = 0; y < map[0].length; y++) {
+        for (int x = 0; x < getMap().length; x++) {
+            for (int y = 0; y < getMap()[0].length; y++) {
                 Point p = new Point(x, y);
-                if (getTile(p).equals(chunkData.FLOOR().copyOf())) {
+                if (getTile(p).equals(getChunkData().FLOOR().copyOf())) {
                     Point left = p.addDirection(Direction.LEFT, 1);
                     Point up = p.addDirection(Direction.UP, 1);
                     Point right = p.addDirection(Direction.RIGHT, 1);
                     Point down = p.addDirection(Direction.DOWN, 1);
-                    if (isInBounds(left) && getTile(left).equals(chunkData.BASE())) {
-                        setTileCopy(left, chunkData.WALL());
+                    if (isInBounds(left) && getTile(left).equals(getChunkData().BASE())) {
+                        setTileCopy(left, getChunkData().WALL());
                     }
-                    if (isInBounds(right) && getTile(right).equals(chunkData.BASE())) {
-                        setTileCopy(right, chunkData.WALL());
+                    if (isInBounds(right) && getTile(right).equals(getChunkData().BASE())) {
+                        setTileCopy(right, getChunkData().WALL());
                     }
-                    if (isInBounds(up) && getTile(up).equals(chunkData.BASE())) {
-                        setTileCopy(up, chunkData.WALL());
+                    if (isInBounds(up) && getTile(up).equals(getChunkData().BASE())) {
+                        setTileCopy(up, getChunkData().WALL());
                     }
-                    if (isInBounds(down) && getTile(down).equals(chunkData.BASE())) {
-                        setTileCopy(down, chunkData.WALL());
+                    if (isInBounds(down) && getTile(down).equals(getChunkData().BASE())) {
+                        setTileCopy(down, getChunkData().WALL());
                     }
                 }
             }
@@ -208,11 +169,11 @@ public class DungeonGenerator implements Generator{
     }
 
     /**
-     * Chooses one room from the list of rooms to lock away and places a key to the room randomly
+     * Chooses one room from the list of getRooms() to lock away and places a key to the room randomly
      * on the dungeon.
      */
     public void createLockedRoom() {
-        for (Room room : this.rooms) {
+        for (Room room : this.getRooms()) {
             if (areDoorsAllowed(room)) {
                 for (int x = room.getX(); x < room.getX() + room.getWidth(); x++) {
                     for (int y = room.getY(); y < room.getY() + room.getHeight(); y++) {
@@ -225,27 +186,27 @@ public class DungeonGenerator implements Generator{
                         Point up2 = p.addDirection(Direction.UP, 2);
                         Point down1 = p.addDirection(Direction.DOWN, 1);
                         Point down2 = p.addDirection(Direction.DOWN, 2);
-                        if (isInBounds(p) && getTile(p).equals(chunkData.FLOOR().copyOf())) {
-                            if ((isInBounds(left1) && getTile(left1).equals(chunkData.WALL()))
+                        if (isInBounds(p) && getTile(p).equals(getChunkData().FLOOR().copyOf())) {
+                            if ((isInBounds(left1) && getTile(left1).equals(getChunkData().WALL()))
                                     && (!isInBounds(left2)
-                                    || getTile(left2).equals(chunkData.WALL())) && (isInBounds(right1)
-                                    && getTile(right1).equals(chunkData.WALL())) && (!isInBounds(right2)
-                                    || getTile(right2).equals(chunkData.WALL()))) {
+                                    || getTile(left2).equals(getChunkData().WALL())) && (isInBounds(right1)
+                                    && getTile(right1).equals(getChunkData().WALL())) && (!isInBounds(right2)
+                                    || getTile(right2).equals(getChunkData().WALL()))) {
                                 setTileCopy(p, Tileset.LOCKED_DOOR);
-                                interactables.add(new Door(p));
-                            } else if ((isInBounds(up1) && getTile(up1).equals(chunkData.WALL()))
+                                getInteractables().add(new Door(p));
+                            } else if ((isInBounds(up1) && getTile(up1).equals(getChunkData().WALL()))
                                     && (!isInBounds(up2)
-                                    || getTile(up2).equals(chunkData.WALL())) && (isInBounds(down1)
-                                    && getTile(down1).equals(chunkData.WALL())) && (!isInBounds(down2)
-                                    || getTile(down2).equals(chunkData.WALL()))) {
+                                    || getTile(up2).equals(getChunkData().WALL())) && (isInBounds(down1)
+                                    && getTile(down1).equals(getChunkData().WALL())) && (!isInBounds(down2)
+                                    || getTile(down2).equals(getChunkData().WALL()))) {
                                 setTileCopy(p, Tileset.LOCKED_DOOR);
-                                interactables.add(new Door(p));
+                                getInteractables().add(new Door(p));
                             }
                         }
                     }
                 }
                 setTile(room.getCenter(), Tileset.TROPHY);
-                interactables.add(new Trophy(room.getCenter()));
+                getInteractables().add(new Trophy(room.getCenter()));
                 room.setLocked(true);
                 break;
             }
@@ -256,9 +217,9 @@ public class DungeonGenerator implements Generator{
 
     private void placeKeys() {
         int count = 0;
-        for (Room room : rooms) {
+        for (Room room : getRooms()) {
             if (!room.isLocked()) {
-                interactables.add(new Key(room.getCenter(), this));
+                getInteractables().add(new Key(room.getCenter(), this));
                 count++;
                 if (count > 2) {
                     break;
@@ -272,11 +233,11 @@ public class DungeonGenerator implements Generator{
      */
 
     public void fillInCorners() {
-        for (int x = 0; x < map.length; x++) {
-            for (int y = 0; y < map[0].length; y++) {
+        for (int x = 0; x < getMap().length; x++) {
+            for (int y = 0; y < getMap()[0].length; y++) {
                 Point p = new Point(x, y);
-                if (getTile(p).equals(chunkData.BASE()) && isUnnecessaryCornerTile(p)) {
-                    setTileCopy(p, chunkData.WALL());
+                if (getTile(p).equals(getChunkData().BASE()) && isUnnecessaryCornerTile(p)) {
+                    setTileCopy(p, getChunkData().WALL());
                 }
             }
         }
@@ -286,28 +247,28 @@ public class DungeonGenerator implements Generator{
      * Should be called at the end of generating a level.
      */
     private void removeUnnecessaryTiles() {
-        for (int x = 0; x < map.length; x++) {
-            for (int y = 0; y < map[0].length; y++) {
+        for (int x = 0; x < getMap().length; x++) {
+            for (int y = 0; y < getMap()[0].length; y++) {
                 Point p = new Point(x, y);
-                if (getTile(p).equals(chunkData.WALL()) && isUnnecessaryWallTile(p)) {
-                    setTileCopy(p, chunkData.FLOOR());
-                } else if (getTile(p).equals(chunkData.BASE()) && isUnnecessaryBaseTile(p)) {
-                    setTileCopy(p, chunkData.WALL());
+                if (getTile(p).equals(getChunkData().WALL()) && isUnnecessaryWallTile(p)) {
+                    setTileCopy(p, getChunkData().FLOOR());
+                } else if (getTile(p).equals(getChunkData().BASE()) && isUnnecessaryBaseTile(p)) {
+                    setTileCopy(p, getChunkData().WALL());
                 }
             }
         }
     }
 
     private void populateMonsters() {
-        for (Room room : rooms) {
-            int numMonsters = rng.nextInt(0, 3);
+        for (Room room : getRooms()) {
+            int numMonsters = getRng().nextInt(0, 3);
             int count = 0;
             while (count != numMonsters) {
-                int x = rng.nextInt(room.getX(), room.getX() + room.getWidth());
-                int y = rng.nextInt(room.getY(), room.getY() + room.getHeight());
+                int x = getRng().nextInt(room.getX(), room.getX() + room.getWidth());
+                int y = getRng().nextInt(room.getY(), room.getY() + room.getHeight());
                 Point p = new Point(x, y);
-                if (getTile(p).equals(chunkData.FLOOR().copyOf())) {
-                    mobs.add(new Monster( Tileset.MONSTER.copyOf(), p, 50));
+                if (getTile(p).equals(getChunkData().FLOOR().copyOf())) {
+                    getMobs().add(new Monster( Tileset.MONSTER.copyOf(), p, 50));
                     setTileCopy(p, Tileset.MONSTER);
                     count++;
                 }
@@ -316,15 +277,15 @@ public class DungeonGenerator implements Generator{
     }
 
     public void placeLamps() {
-        for (Room room : rooms) {
-            int numMonsters = rng.nextInt(0, 2);
+        for (Room room : getRooms()) {
+            int numMonsters = getRng().nextInt(0, 2);
             int count = 0;
             while (count != numMonsters) {
-                int x = rng.nextInt(room.getX() + 2, room.getX() + room.getWidth() - 2);
-                int y = rng.nextInt(room.getY() + 2, room.getY() + room.getHeight() - 2);
+                int x = getRng().nextInt(room.getX() + 2, room.getX() + room.getWidth() - 2);
+                int y = getRng().nextInt(room.getY() + 2, room.getY() + room.getHeight() - 2);
                 Point p = new Point(x, y);
-                if (getTile(p).equals(chunkData.FLOOR().copyOf())) {
-                    interactables.add(new Lamp(p, new ArrayList<>(mobs)));
+                if (getTile(p).equals(getChunkData().FLOOR().copyOf())) {
+                    getInteractables().add(new Lamp(p, new ArrayList<>(getMobs())));
                     setTileCopy(p, Tileset.LIGHT);
                     count++;
                 }
@@ -343,10 +304,10 @@ public class DungeonGenerator implements Generator{
         boolean isBoundaryWall = false;
         for (Direction dir : Direction.ORDINAL) {
             Point newP = p.addDirection(dir, 1);
-            if (isInBounds(newP) && getTile(newP).equals(chunkData.BASE())) {
+            if (isInBounds(newP) && getTile(newP).equals(getChunkData().BASE())) {
                 isBoundaryWall = true;
             }
-            if (isInBounds(newP) && getTile(newP).equals(chunkData.FLOOR().copyOf())) {
+            if (isInBounds(newP) && getTile(newP).equals(getChunkData().FLOOR().copyOf())) {
                 count++;
             }
         }
@@ -366,12 +327,12 @@ public class DungeonGenerator implements Generator{
         int count = 0;
         for (Direction dir : Direction.ORDINAL) {
             Point newP = p.addDirection(dir, 1);
-            if (isInBounds(newP) && getTile(newP).equals(chunkData.WALL())) {
+            if (isInBounds(newP) && getTile(newP).equals(getChunkData().WALL())) {
                 count++;
             }
 
         }
-        return count >= 3 && getTile(p).equals(chunkData.BASE());
+        return count >= 3 && getTile(p).equals(getChunkData().BASE());
     }
 
     private boolean isUnnecessaryCornerTile(Point p) {
@@ -381,14 +342,14 @@ public class DungeonGenerator implements Generator{
             Point p1 = p.addDirection(dir, 1);
             Point p2 = p.addDirection(dir, 2);
             if(isInBounds(p1) && isInBounds(p2)) {
-                if((getTile(p1).equals(chunkData.WALL())) && getTile(p2).equals(chunkData.WALL()) && (prevDir == null || Direction.isNeighbor(prevDir, dir))) {
+                if((getTile(p1).equals(getChunkData().WALL())) && getTile(p2).equals(getChunkData().WALL()) && (prevDir == null || Direction.isNeighbor(prevDir, dir))) {
                     count++;
                     prevDir = dir;
                 }
             }
 
         }
-        return count == 2 && getTile(p).equals(chunkData.BASE());
+        return count == 2 && getTile(p).equals(getChunkData().BASE());
     }
 
     /**
@@ -404,7 +365,7 @@ public class DungeonGenerator implements Generator{
         for (int x = room.getX(); x < room.getX() + room.getWidth(); x++) {
             for (int y = room.getY(); y < room.getY() + room.getHeight(); y++) {
                 Point p = new Point(x, y);
-                if (getTile(p).equals(chunkData.WALL())) {
+                if (getTile(p).equals(getChunkData().WALL())) {
                     count++;
                 }
             }
@@ -414,34 +375,19 @@ public class DungeonGenerator implements Generator{
     }
 
     /**
-     * Sets the given point to the given tile.
-     *
-     * @param p    the location to be changed
-     * @param tile the tile to change the location to
-     */
-    public void setTileCopy(Point p, TETile tile) {
-        map[p.getX()][p.getY()] = tile.copyOf();
-    }
-
-    public void setTile(Point p, TETile tile) {
-        map[p.getX()][p.getY()] = tile;
-    }
-
-
-    /**
      * Check if the given point is the corner of a room
      *
      * @param pos the point to check
      * @return returns true or false depending on if the point is a corner
      */
     private boolean isCorner(Point pos) {
-        if (!getTile(pos).equals(chunkData.WALL())) {
+        if (!getTile(pos).equals(getChunkData().WALL())) {
             return false;
         }
         Direction prevDir = null;
         for (Direction dir : Direction.ORDINAL) {
             Point tile1 = pos.addDirection(dir, 1);
-            if (isInBounds(tile1) && getTile(tile1).equals(chunkData.WALL())) {
+            if (isInBounds(tile1) && getTile(tile1).equals(getChunkData().WALL())) {
                 prevDir = dir;
                 break;
             }
@@ -451,56 +397,14 @@ public class DungeonGenerator implements Generator{
         } else if (prevDir == Direction.UP || prevDir == Direction.DOWN) {
             Point left = pos.addDirection(Direction.LEFT, 1);
             Point right = pos.addDirection(Direction.RIGHT, 1);
-            return (isInBounds(left) || getTile(left).equals(chunkData.WALL())) && (isInBounds(right)
-                    && getTile(right).equals(chunkData.WALL()));
+            return (isInBounds(left) || getTile(left).equals(getChunkData().WALL())) && (isInBounds(right)
+                    && getTile(right).equals(getChunkData().WALL()));
         } else if (prevDir == Direction.LEFT || prevDir == Direction.RIGHT) {
             Point up = pos.addDirection(Direction.UP, 1);
             Point down = pos.addDirection(Direction.DOWN, 1);
-            return (isInBounds(up) && getTile(up).equals(chunkData.WALL())) || (isInBounds(down)
-                    && getTile(down).equals(chunkData.WALL()));
+            return (isInBounds(up) && getTile(up).equals(getChunkData().WALL())) || (isInBounds(down)
+                    && getTile(down).equals(getChunkData().WALL()));
         }
         return false;
-    }
-
-    /**
-     * Checks if the given point p is within bounds of the map
-     *
-     * @param p point p
-     * @return true/false if the value is within bounds of the map
-     */
-    public boolean isInBounds(Point p) {
-        return p.getX() < map.length && p.getX() >= 0 && p.getY() < map[0].length && p.getY() >= 0;
-    }
-
-    /**
-     * Gets the direction that the end point is in relation to the starting point.
-     * Only works for points that have moved in only one direction.
-     *
-     * @param start the starting point
-     * @param end   the end point
-     * @return the direction of the end point
-     */
-    public Direction getDirection(Point start, Point end) {
-        if (start.getY() < end.getY()) {
-            return Direction.UP;
-        } else if (start.getY() > end.getY()) {
-            return Direction.DOWN;
-        } else if (start.getX() < end.getX()) {
-            return Direction.RIGHT;
-        } else if (start.getX() > end.getX()) {
-            return Direction.LEFT;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Gets the tile at the given point
-     *
-     * @param p the location to get the tile from
-     * @return the tile at the given point
-     */
-    public TETile getTile(Point p) {
-        return map[p.getX()][p.getY()];
     }
 }

@@ -40,6 +40,7 @@ public class Tileset {
             "Lamp");
     public static final TETile TROPHY = new TETile('þ', Color.YELLOW, baseColor,
             "Trophy");
+    public static final TETile TEST_SQUARE = new TETile(' ', Color.WHITE, baseColor, "Test tile" );
 }
 
 

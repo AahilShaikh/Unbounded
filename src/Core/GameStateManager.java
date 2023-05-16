@@ -1,6 +1,7 @@
 package Core;
 
 import Core.DataStructures.GameStatus;
+import Core.DataStructures.Tile;
 import Core.Entities.Lamp;
 import Core.Entities.Monster;
 import Core.Input.InputSource;
@@ -37,8 +38,9 @@ public class GameStateManager implements Serializable {
             startUserInput();
             return;
         }
-        worldEngine.createFloor(100, Tileset.NOTHING.copyOf(),
-                Tileset.FLOOR.copyOf(), Tileset.WALL.copyOf());
+//        worldEngine.createDungeon(100, Tileset.NOTHING.copyOf(),
+//                Tileset.FLOOR.copyOf(), Tileset.WALL.copyOf());
+        worldEngine.createOutside(Tileset.TREE, Tileset.TEST_SQUARE, Tileset.MOUNTAIN);
         worldEngine.createPlayer();
         TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getMap(),
                 GameServices.getInstance().getPlayer().currentLocation(), GameServices.getInstance().getPlayer(),
