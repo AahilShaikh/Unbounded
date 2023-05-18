@@ -47,7 +47,6 @@ public class TETile implements Serializable {
         this.backgroundColor = backgroundColor;
         this.description = description;
         this.filepath = filepath;
-        System.out.println("Construcotr" + filepath);
         this.baseBackgroundColor = backgroundColor;
         this.baseTextColor = textColor;
     }
