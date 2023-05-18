@@ -2,7 +2,7 @@
 Welcome to the Unbounded repository! Unbounded is a 2D tile dungeon crawler that generates its levels procedurally. 
 The game is built in Java, and it is inspired by classic games like Rogue and Dwarf Fortress.
 
-## Procdeural Generation
+## Procedural Generation
 One of the key features of Unbounded is its procedural generation. The game employs several different algorithms to generate its levels, 
 including my own custom algorithm for creating dungeons. The algorithm works by attempting to place randomly sized rooms on a map a set 
 number of times and then connecting them together. This process results in unique and challenging dungeon layouts for players to explore.
