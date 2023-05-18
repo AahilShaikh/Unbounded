@@ -19,28 +19,36 @@ public class OutsideGenerator extends Generator {
         for (int x = 0; x < getMap().length; x++) {
             for (int y = 0; y < getMap()[0].length; y++) {
                 double noise = SimplexNoise.sample(x, y, 7);
-                System.out.println(noise);
-                Color c;
-                if(noise >= 0.8) {
-                    c = Color.WHITE;
-                } else if(noise >= 0.28 ) {
-                    c =  new Color(136, 110, 88);
-                } else if( noise >= 0) {
-                    c = new Color(115, 82, 56);
-                } else if(noise >= -0.1) {
-                    c = new Color(8, 112, 41);
-                } else if(noise >= -0.5) {
-                    c = new Color(43, 117, 66);
-                } else if(noise >= -0.6) {
-                    c = new Color(224, 215, 114);
-                } else if(noise >= -0.8)  {
-                    c = new Color(57, 84, 191);
+                TETile tile;
+                if(noise < -0.5) {
+                    tile = getChunkData().tileMap().get("deep ocean");
+                } else if(noise < -0.4) {
+                    tile = getChunkData().tileMap().get("ocean");
+                } else if(noise < -0.2) {
+                    tile = getChunkData().tileMap().get("sea");
+                } else if(noise < -0.1) {
+                    tile = getChunkData().tileMap().get("beach");
+                } else if(noise < 0.2) {
+                    tile = getChunkData().tileMap().get("plains");
+                } else if(noise < 0.3) {
+                    tile = getChunkData().tileMap().get("forest");
+                } else if(noise < 0.4) {
+                    tile = getChunkData().tileMap().get("deep forest");
+                } else if(noise < 0.5) {
+                    tile = getChunkData().tileMap().get("hills");
+                } else if(noise < 0.6) {
+                    tile = getChunkData().tileMap().get("cliffs");
+                } else if(noise < 0.7) {
+                    tile = getChunkData().tileMap().get("mountains");
+                } else if(noise < 0.8) {
+                    tile = getChunkData().tileMap().get("high mountains");
+                } else if(noise < 0.9) {
+                    tile = getChunkData().tileMap().get("icy mountains");
                 } else {
-                    c = new Color(26, 60, 196);
+                    tile = getChunkData().tileMap().get("ice");
                 }
 
-                setTile(new Point(x, y), new TETile(' ',
-                        Color.WHITE,c,"Test tile"));
+                setTileCopy(new Point(x, y), tile);
             }
         }
         return new Chunk(getMap(), getInteractables(), getMobs(), getChunkData(), getRooms());

@@ -72,7 +72,7 @@ public class Chunk implements Serializable {
 
     public boolean isBlocking(Point p) {
         TETile t = getTile(p);
-        return t.equals(chunkData.WALL()) || t.equals(Tileset.LOCKED_DOOR);
+        return t.equals(chunkData.tileMap().get("wall")) || t.equals(Tileset.LOCKED_DOOR);
     }
 
     /**

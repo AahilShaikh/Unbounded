@@ -38,7 +38,7 @@ public class Monster implements Entity, Serializable {
     @Override
     public void init(Chunk chunk) {
         this.chunk = chunk;
-        this.tileCurrentlyOn = this.chunk.getChunkData().FLOOR().copyOf();
+        this.tileCurrentlyOn = this.chunk.getChunkData().tileMap().get("floor").copyOf();
         this.chunk.setTileCopy(currentLoc, AVATAR.copyOf());
     }
 
@@ -106,10 +106,7 @@ public class Monster implements Entity, Serializable {
     @Override
     public boolean canMoveTo(Point p) {
         synchronized (chunk) {
-            TETile tile = chunk.getTile(p);
-            return chunk.isInBounds(p)
-                    && (tile.equals(chunk.getChunkData().FLOOR()) || tile.equals(GameServices.getInstance().getPlayer().getAVATAR())
-                    || tile.equals(Tileset.FLOWER.copyOf()) || tile.equals(AVATAR) || tile.equals(Tileset.TREE));
+            return chunk.isInBounds(p) && Tileset.reachableTiles.contains(chunk.getTile(p));
         }
     }
 
@@ -117,7 +114,7 @@ public class Monster implements Entity, Serializable {
         synchronized (chunk) {
             TETile tile = chunk.getTile(p);
             return chunk.isInBounds(p)
-                    && (tile.equals(chunk.getChunkData().FLOOR()) || tile.equals(GameServices.getInstance().getPlayer().getAVATAR())
+                    && (tile.equals(chunk.getChunkData().tileMap().get("floor")) || tile.equals(GameServices.getInstance().getPlayer().getAVATAR())
                     || tile.equals(Tileset.FLOWER.copyOf()) || tile.equals(Tileset.TREE));
         }
     }
@@ -160,7 +157,7 @@ public class Monster implements Entity, Serializable {
                     chunk.setTile(currentLoc, tileCurrentlyOn);
                     tileCurrentlyOn = chunk.getTile(moves.get(0));
                     if (tileCurrentlyOn.equals(Tileset.TREE)) {
-                        tileCurrentlyOn = chunk.getChunkData().FLOOR().copyOf();
+                        tileCurrentlyOn = chunk.getChunkData().tileMap().get("floor").copyOf();
                     }
                     chunk.setTile(moves.get(0),
                             Tileset.MONSTER.copyOf().lighten(tileCurrentlyOn.getShade()));
@@ -207,7 +204,7 @@ public class Monster implements Entity, Serializable {
         synchronized (chunk) {
             for (Point p : this.pathBlocks) {
                 if (chunk.getTile(p).equals(Tileset.TREE)) {
-                    chunk.setTileCopy(p, chunk.getChunkData().FLOOR().copyOf());
+                    chunk.setTileCopy(p, chunk.getChunkData().tileMap().get("floor").copyOf());
                 }
             }
         }

@@ -63,8 +63,8 @@ public class Lamp implements Interactable, Serializable {
     private void turnOn() {
         synchronized (chunk) {
             for (Point point : reach) {
-                if (chunk.getTile(point).equals(chunk.getChunkData().WALL())
-                        || chunk.getTile(point).equals(chunk.getChunkData().BASE())) {
+                if (chunk.getTile(point).equals(chunk.getChunkData().tileMap().get("wall"))
+                        || chunk.getTile(point).equals(chunk.getChunkData().tileMap().get("base"))) {
                     continue;
                 }
                 chunk.getTile(point).lighten(Math.abs(Math

@@ -1,10 +1,7 @@
 package Core.Entities;
 
 import Core.Constants;
-import Core.DataStructures.Direction;
-import Core.DataStructures.GameStatus;
-import Core.DataStructures.Point;
-import Core.DataStructures.Room;
+import Core.DataStructures.*;
 import Core.Chunk;
 import Core.GameServices;
 import TileEngine.TERenderer;
@@ -14,7 +11,6 @@ import edu.princeton.cs.algs4.StdDraw;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,9 +75,7 @@ public class Player implements Entity, Serializable {
 
         private boolean canMoveTo(Point p) {
             synchronized (floorGen) {
-                return floorGen.isInBounds(p)
-                        && (floorGen.getTile(p).equals(floorGen.getChunkData().FLOOR())
-                        || floorGen.getTile(p).equals(Tileset.UNLOCKED_DOOR.copyOf()) || floorGen.getTile(p).equals(Tileset.TREE));
+                return floorGen.isInBounds(p) && Tileset.reachableTiles.contains(floorGen.getTile(p));
             }
         }
 
@@ -130,15 +124,20 @@ public class Player implements Entity, Serializable {
         if(p.isPresent()) {
             this.currentLoc = p.get().getCenter();
         } else {
+            TETile floor = this.floorGen.getChunkData().tileMap().get("floor");
+            TETile plains = this.floorGen.getChunkData().tileMap().get("plains");
+            TETile beach = this.floorGen.getChunkData().tileMap().get("beach");
+
             for(int row = 0; row < this.floorGen.getMap().length; row++) {
                 for(int col = 0; col < this.floorGen.getMap()[0].length; col++) {
-                    if(this.floorGen.getMap()[row][col].equals(this.floorGen.getChunkData().FLOOR())) {
+                    TETile loc = this.floorGen.getMap()[row][col];
+                    if(loc.equals(floor) || loc.equals(plains) || loc.equals(beach)) {
                         this.currentLoc = new Point(row, col);
+                        this.tileCurrentlyOn = loc.copyOf();
                     }
                 }
             }
         }
-        this.tileCurrentlyOn = floorGen.getChunkData().FLOOR().copyOf();
         this.floorGen.setTileCopy(currentLoc, AVATAR);
         this.mana = mana;
         this.maxMana = mana;
@@ -191,9 +190,7 @@ public class Player implements Entity, Serializable {
     @Override
     public boolean canMoveTo(Point p) {
         synchronized (floorGen) {
-            return floorGen.isInBounds(p)
-                    && (floorGen.getTile(p).equals(floorGen.getChunkData().FLOOR())
-                    || floorGen.getTile(p).equals(Tileset.UNLOCKED_DOOR.copyOf()) || floorGen.getTile(p).equals(Tileset.TREE));
+            return floorGen.isInBounds(p) && Tileset.reachableTiles.contains(floorGen.getTile(p));
         }
     }
 
@@ -214,6 +211,7 @@ public class Player implements Entity, Serializable {
                 currentlyFacing = Direction.RIGHT;
                 moveHelper(location.addDirection(Direction.RIGHT, 1));
             }
+            System.out.println(currentLoc);
         }
     }
 
@@ -229,7 +227,7 @@ public class Player implements Entity, Serializable {
                 floorGen.setTile(currentLoc, tileCurrentlyOn);
                 tileCurrentlyOn = floorGen.getTile(newLoc);
                 if(tileCurrentlyOn.equals(Tileset.TREE)) {
-                    tileCurrentlyOn = floorGen.getChunkData().FLOOR().copyOf();
+                    tileCurrentlyOn = floorGen.getChunkData().tileMap().get("floor").copyOf();
                 }
                 floorGen.setTile(newLoc, AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
                 currentLoc = newLoc;

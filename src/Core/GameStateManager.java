@@ -8,6 +8,7 @@ import Core.Input.InputSource;
 import Core.Input.KeyboardInputSource;
 import Core.Input.StringInputSource;
 import TileEngine.TERenderer;
+import TileEngine.TETile;
 import TileEngine.Tileset;
 import edu.princeton.cs.algs4.StdDraw;
 
@@ -38,9 +39,8 @@ public class GameStateManager implements Serializable {
             startUserInput();
             return;
         }
-        worldEngine.createDungeon(100, Tileset.NOTHING.copyOf(),
-                Tileset.FLOOR.copyOf(), Tileset.WALL.copyOf());
-//        worldEngine.createOutside(Tileset.TREE, Tileset.TEST_SQUARE, Tileset.MOUNTAIN);
+//        worldEngine.createDungeon(100);
+        worldEngine.createOutside();
         worldEngine.createPlayer();
         TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getMap(),
                 GameServices.getInstance().getPlayer().currentLocation(), GameServices.getInstance().getPlayer(),

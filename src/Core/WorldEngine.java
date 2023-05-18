@@ -1,6 +1,7 @@
 package Core;
 
 import Core.DataStructures.ChunkData;
+import Core.DataStructures.Tile;
 import Core.Entities.Player;
 import Core.Generators.DungeonGenerator;
 import Core.Generators.OutsideGenerator;
@@ -9,6 +10,9 @@ import TileEngine.TETile;
 import TileEngine.Tileset;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -46,33 +50,46 @@ public class WorldEngine implements Serializable {
      * Creates a floor.
      *
      * @param roomTries The number of times a room should be attempted to be placed on the floor.
-     * @param base      The base tile of the floor.
-     * @param floor     The floor tile of the floor.
-     * @param wall      The wall tile of the floor.
      */
-    public void createDungeon(int roomTries, TETile base, TETile floor, TETile wall) {
+    public void createDungeon(int roomTries) {
         long floorSeed = worldEngineRng.nextInt();
+        Map<String, TETile> tileMap = Map.ofEntries(
+                new AbstractMap.SimpleEntry<>("floor", Tileset.FLOOR),
+                new AbstractMap.SimpleEntry<>("wall", Tileset.WALL),
+                new AbstractMap.SimpleEntry<>("base", Tileset.NOTHING)
+        );
         currentChunk = new DungeonGenerator(floorSeed, roomTries,
                 TERenderer.getInstance().getStageWidth(),
                 TERenderer.getInstance().getStageHeight(), new ChunkData(worldEngineRng.nextInt(),
                 worldEngineRng.nextInt(), worldEngineRng.nextInt(),
-                worldEngineRng.nextInt(), floorSeed, floor, wall, base)).generate();
+                worldEngineRng.nextInt(), floorSeed, tileMap)).generate();
     }
 
     /**
      * Creates a floor.
-     *
-     * @param base      The base tile of the floor.
-     * @param floor     The floor tile of the floor.
-     * @param wall      The wall tile of the floor.
      */
-    public void createOutside(TETile base, TETile floor, TETile wall) {
+    public void createOutside() {
         long floorSeed = worldEngineRng.nextInt();
+        Map<String, TETile> tileMap = Map.ofEntries(
+                new AbstractMap.SimpleEntry<>("deep ocean", Tileset.DEEP_OCEAN),
+                new AbstractMap.SimpleEntry<>("ocean", Tileset.OCEAN),
+                new AbstractMap.SimpleEntry<>("sea", Tileset.SEA),
+                new AbstractMap.SimpleEntry<>("beach", Tileset.BEACH),
+                new AbstractMap.SimpleEntry<>("plains", Tileset.PLAINS),
+                new AbstractMap.SimpleEntry<>("forest", Tileset.FOREST),
+                new AbstractMap.SimpleEntry<>("deep forest", Tileset.DEEP_FOREST),
+                new AbstractMap.SimpleEntry<>("hills", Tileset.HILLS),
+                new AbstractMap.SimpleEntry<>("cliffs", Tileset.CLIFFS),
+                new AbstractMap.SimpleEntry<>("mountains", Tileset.MOUNTAINS),
+                new AbstractMap.SimpleEntry<>("high mountains", Tileset.HIGH_MOUNTAINS),
+                new AbstractMap.SimpleEntry<>("icy mountains", Tileset.ICY_MOUNTAINS),
+                new AbstractMap.SimpleEntry<>("ice", Tileset.ICE)
+        );
         currentChunk = new OutsideGenerator(floorSeed,
                 TERenderer.getInstance().getStageWidth(),
                 TERenderer.getInstance().getStageHeight(), new ChunkData(worldEngineRng.nextInt(),
                 worldEngineRng.nextInt(), worldEngineRng.nextInt(),
-                worldEngineRng.nextInt(), floorSeed, floor, wall, base)).generate();
+                worldEngineRng.nextInt(), floorSeed, tileMap)).generate();
     }
 
     /**

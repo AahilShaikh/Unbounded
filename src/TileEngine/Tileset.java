@@ -2,6 +2,8 @@ package TileEngine;
 
 import java.awt.*;
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Contains constant tile objects, to avoid having to remake the same tiles in different parts of
@@ -40,13 +42,13 @@ public class Tileset {
             "Grass");
     public static final TETile SEA = new TETile(' ',Color.WHITE,new Color(0, 180, 252),
             "Grass");
-    public static final TETile BEACH = new TETile(' ',Color.WHITE,new Color(175, 209, 62),
+    public static final TETile BEACH = new TETile(' ',Color.WHITE,new Color(224, 215, 114),
             "Grass");
-    public static final TETile PLAINS = new TETile(' ',Color.WHITE,new Color(113, 174, 78),
+    public static final TETile PLAINS = new TETile(' ',Color.WHITE,new Color(43, 117, 66),
             "Grass");
-    public static final TETile FOREST = new TETile(' ',Color.WHITE,new Color(113, 134, 78),
+    public static final TETile FOREST = new TETile(' ',Color.WHITE,new Color(8, 112, 41),
             "Grass");
-    public static final TETile DEEP_FOREST = new TETile(' ',Color.WHITE,new Color(62, 102, 23),
+    public static final TETile DEEP_FOREST = new TETile(' ',Color.WHITE,new Color(3, 79, 26),
             "Grass");
     public static final TETile HILLS = new TETile(' ',Color.WHITE,new Color(166, 140, 105),
             "Grass");
@@ -60,9 +62,6 @@ public class Tileset {
             "Grass");
     public static final TETile ICE = new TETile(' ',Color.WHITE,Color.white,
             "Grass");
-    public static final TETile GRASS = new TETile(' ',Color.WHITE,new Color(43, 117, 66),"Grass");
-    public static final TETile SAND = new TETile('▒', Color.yellow, baseColor, "sand");
-    public static final TETile MOUNTAIN = new TETile('▲', Color.gray, baseColor, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, baseColor, "tree");
     public static final TETile FLOWER = new TETile('❀', Color.magenta, Color.pink, "flower");
 
@@ -76,6 +75,20 @@ public class Tileset {
             "Lamp");
     public static final TETile TROPHY = new TETile('þ', Color.YELLOW, baseColor,
             "Trophy");
+    public static final TETile TEST_SQUARE = new TETile(' ', Color.WHITE, baseColor, "Test tile" );
+
+
+    public static ArrayList<TETile> reachableTiles = new ArrayList<>() {{
+        add(FLOOR);
+        add(PLAINS);
+        add(BEACH);
+        add(UNLOCKED_DOOR);
+        add(TREE);
+        add(AVATAR);
+        add(FLOWER);
+    }};
+
+
 }
 
 
