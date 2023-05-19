@@ -75,7 +75,7 @@ public class Player implements Entity, Serializable {
 
         private boolean canMoveTo(Point p) {
             synchronized (floorGen) {
-                return floorGen.isInBounds(p) && Tileset.reachableTiles.contains(floorGen.getTile(p));
+                return floorGen.isInBounds(p) && Tileset.reachableAttackTiles.contains(floorGen.getTile(p));
             }
         }
 
@@ -124,16 +124,11 @@ public class Player implements Entity, Serializable {
         if(p.isPresent()) {
             this.currentLoc = p.get().getCenter();
         } else {
-            TETile floor = this.floorGen.getChunkData().tileMap().get("floor");
-            TETile plains = this.floorGen.getChunkData().tileMap().get("plains");
-            TETile beach = this.floorGen.getChunkData().tileMap().get("beach");
-
             for(int row = 0; row < this.floorGen.getMap().length; row++) {
                 for(int col = 0; col < this.floorGen.getMap()[0].length; col++) {
-                    TETile loc = this.floorGen.getMap()[row][col];
-                    if(loc.equals(floor) || loc.equals(plains) || loc.equals(beach)) {
+                    if(canMoveTo(new Point(row, col))) {
                         this.currentLoc = new Point(row, col);
-                        this.tileCurrentlyOn = loc.copyOf();
+                        this.tileCurrentlyOn = this.floorGen.getMap()[row][col].copyOf();
                     }
                 }
             }
@@ -190,7 +185,7 @@ public class Player implements Entity, Serializable {
     @Override
     public boolean canMoveTo(Point p) {
         synchronized (floorGen) {
-            return floorGen.isInBounds(p) && Tileset.reachableTiles.contains(floorGen.getTile(p));
+            return floorGen.isInBounds(p) && Tileset.reachableEntityTiles.contains(floorGen.getTile(p));
         }
     }
 
@@ -223,6 +218,7 @@ public class Player implements Entity, Serializable {
      */
     private void moveHelper(Point newLoc) {
         synchronized (floorGen) {
+            System.out.println(canMoveTo(newLoc));
             if (canMoveTo(newLoc)) {
                 floorGen.setTile(currentLoc, tileCurrentlyOn);
                 tileCurrentlyOn = floorGen.getTile(newLoc);

@@ -106,7 +106,7 @@ public class Monster implements Entity, Serializable {
     @Override
     public boolean canMoveTo(Point p) {
         synchronized (chunk) {
-            return chunk.isInBounds(p) && Tileset.reachableTiles.contains(chunk.getTile(p));
+            return chunk.isInBounds(p) && Tileset.reachableEntityTiles.contains(chunk.getTile(p));
         }
     }
 

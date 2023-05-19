@@ -1,8 +1,6 @@
 package TileEngine;
 
 import java.awt.*;
-import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -37,31 +35,31 @@ public class Tileset {
 
     //Outside tiles
     public static final TETile DEEP_OCEAN = new TETile(' ',Color.WHITE,new Color(1, 38, 119),
-            "Grass");
+            "Deep Ocean");
     public static final TETile OCEAN = new TETile(' ',Color.WHITE,new Color(0, 91, 197),
-            "Grass");
+            "Ocean");
     public static final TETile SEA = new TETile(' ',Color.WHITE,new Color(0, 180, 252),
-            "Grass");
+            "Sea");
     public static final TETile BEACH = new TETile(' ',Color.WHITE,new Color(224, 215, 114),
-            "Grass");
+            "Beach");
     public static final TETile PLAINS = new TETile(' ',Color.WHITE,new Color(43, 117, 66),
-            "Grass");
+            "Plains");
     public static final TETile FOREST = new TETile(' ',Color.WHITE,new Color(8, 112, 41),
-            "Grass");
+            "Forest");
     public static final TETile DEEP_FOREST = new TETile(' ',Color.WHITE,new Color(3, 79, 26),
-            "Grass");
+            "Deep Forest");
     public static final TETile HILLS = new TETile(' ',Color.WHITE,new Color(166, 140, 105),
-            "Grass");
+            "Hills");
     public static final TETile CLIFFS = new TETile(' ',Color.WHITE,new Color(168, 149, 143),
-            "Grass");
+            "Cliffs");
     public static final TETile MOUNTAINS = new TETile(' ',Color.WHITE,new Color(150, 129, 122),
-            "Grass");
+            "Mountains");
     public static final TETile HIGH_MOUNTAINS = new TETile(' ',Color.WHITE,new Color(84, 106, 107),
-            "Grass");
+            "High Mountains");
     public static final TETile ICY_MOUNTAINS = new TETile(' ',Color.WHITE,new Color(44, 97, 89),
-            "Grass");
+            "Icy Mountains");
     public static final TETile ICE = new TETile(' ',Color.WHITE,Color.white,
-            "Grass");
+            "Ice");
     public static final TETile TREE = new TETile('♠', Color.green, baseColor, "tree");
     public static final TETile FLOWER = new TETile('❀', Color.magenta, Color.pink, "flower");
 
@@ -77,8 +75,7 @@ public class Tileset {
             "Trophy");
     public static final TETile TEST_SQUARE = new TETile(' ', Color.WHITE, baseColor, "Test tile" );
 
-
-    public static ArrayList<TETile> reachableTiles = new ArrayList<>() {{
+    public static ArrayList<TETile> reachableEntityTiles = new ArrayList<>() {{
         add(FLOOR);
         add(PLAINS);
         add(BEACH);
@@ -87,6 +84,21 @@ public class Tileset {
         add(AVATAR);
         add(FLOWER);
     }};
+
+    public static ArrayList<TETile> reachableAttackTiles = new ArrayList<>() {{
+        add(FLOOR);
+        add(PLAINS);
+        add(BEACH);
+        add(UNLOCKED_DOOR);
+        add(TREE);
+        add(AVATAR);
+        add(FLOWER);
+        add(DEEP_OCEAN);
+        add(OCEAN);
+        add(SEA);
+    }};
+
+
 
 
 }
