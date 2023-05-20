@@ -12,7 +12,6 @@ import edu.princeton.cs.algs4.StdDraw;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Represents a player in the game
@@ -60,7 +59,7 @@ public class Player implements Entity, Serializable {
                     prevLocation = prevLocation.addDirection(attackDirection, 1);
                     count++;
                     TERenderer.getInstance().renderFrame(floorGen.getFloorArray(),
-                            player.currentLocation(), player, floorGen.getMobs());
+                            player.getCurrentLocation(), player, floorGen.mobs());
                 }
                 if (floorGen.getTile(attackLocation.addDirection(attackDirection, -1))
                         .equals(Tileset.FLOWER)) {
@@ -68,7 +67,7 @@ public class Player implements Entity, Serializable {
                 }
                 //Render attack
                 TERenderer.getInstance().renderFrame(floorGen.getFloorArray(),
-                        player.currentLocation(), player, floorGen.getMobs());
+                        player.getCurrentLocation(), player, floorGen.mobs());
                 attackMonster(attackLocation);
             }
         }
@@ -82,7 +81,7 @@ public class Player implements Entity, Serializable {
         private void attackMonster(Point p) {
             synchronized (floorGen) {
                 int index = -1;
-                ArrayList<Monster> mobs = new ArrayList<>(floorGen.getMobs());
+                ArrayList<Monster> mobs = new ArrayList<>(floorGen.mobs());
                 for (int i = 0; i < mobs.size(); i++) {
                     if (mobs.get(i).sameLocation(p)) {
                         index = i;
@@ -90,7 +89,7 @@ public class Player implements Entity, Serializable {
                     }
                 }
                 if (index != -1) {
-                    floorGen.getMobs().get(index).getDamaged(player.getDamage());
+                    floorGen.mobs().get(index).getDamaged(player.getDamage());
                 }
             }
         }
@@ -102,7 +101,7 @@ public class Player implements Entity, Serializable {
 
 
 
-    private final Chunk floorGen;
+    private Chunk chunk;
     private final TETile AVATAR;
     private Point currentLoc;
     private Direction currentlyFacing = Direction.UP;
@@ -114,33 +113,56 @@ public class Player implements Entity, Serializable {
     private final int maxMana;
     private final List<Interactable> inventory = new ArrayList<>();
 
-    public Player(Chunk floorGen, TETile avatar, int health, int mana) {
-        this.floorGen = floorGen;
+    public Player(Chunk chunk, TETile avatar, int health, int mana) {
+        this.chunk = chunk;
         this.AVATAR = avatar;
         this.currHealth = health;
         this.maxHealth = health;
-        Optional<Room> p = this.floorGen.getRooms().stream()
-                .filter((Room room) -> !room.isLocked()).findFirst();
-        if(p.isPresent()) {
-            this.currentLoc = p.get().getCenter();
-        } else {
-            for(int row = 0; row < this.floorGen.getMap().length; row++) {
-                for(int col = 0; col < this.floorGen.getMap()[0].length; col++) {
-                    if(canMoveTo(new Point(row, col))) {
-                        this.currentLoc = new Point(row, col);
-                        this.tileCurrentlyOn = this.floorGen.getMap()[row][col].copyOf();
-                    }
-                }
-            }
-        }
-        this.floorGen.setTileCopy(currentLoc, AVATAR);
+        spawn();
         this.mana = mana;
         this.maxMana = mana;
     }
 
+    /**
+     * Spawns the player in the current chunk, randomly.
+     */
+    public void spawn() {
+        for(int row = 0; row < this.chunk.map().length; row++) {
+            for(int col = 0; col < this.chunk.map()[0].length; col++) {
+                if(canMoveTo(new Point(row, col))) {
+                    this.currentLoc = new Point(row, col);
+                    this.tileCurrentlyOn = this.chunk.map()[row][col].copyOf();
+                    this.chunk.setTileCopy(currentLoc, AVATAR);
+                    return;
+                } else {
+                    System.out.println("OOPS");
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @param p relative point in chunk
+     * @param chunk the chunk you want to spawn the player in
+     * @return whether the spawn was successful
+     */
+    public boolean spawn(Point p, Chunk chunk) {
+        System.out.println("IS in bounds: " + chunk.isInBounds(p));
+        System.out.println("The tile is: " + chunk.getTile(p));
+        if(chunk.isInBounds(p) && Tileset.reachableEntityTiles.contains(chunk.getTile(p))) {
+            currentLoc = p;
+            this.tileCurrentlyOn = chunk.map()[p.getX()][p.getY()].copyOf();
+            chunk.setTileCopy(p, AVATAR);
+            this.chunk = chunk;
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void interactWith(List<Interactable> objects) {
-        synchronized (floorGen) {
+        synchronized (chunk) {
             Point location = currentLoc.addDirection(currentlyFacing, 1);
             for (Interactable object : objects) {
                 if (object.getLocation().equals(location)) {
@@ -154,7 +176,7 @@ public class Player implements Entity, Serializable {
     @Override
     public void attack() {
         if (mana > 0) {
-            PlayerAttack attack = new PlayerAttack(currentlyFacing, currentLoc, floorGen,
+            PlayerAttack attack = new PlayerAttack(currentlyFacing, currentLoc, chunk,
                     this);
             Constants.EXECUTOR_SERVICE.execute(attack);
         }
@@ -163,36 +185,36 @@ public class Player implements Entity, Serializable {
 
     @Override
     public void getDamaged(int damageDealt) {
-        synchronized (floorGen) {
+        synchronized (chunk) {
             decreaseHealth(damageDealt);
-            floorGen.setTile(currentLoc,
+            chunk.setTile(currentLoc,
                     Tileset.ATTACKED_AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
-            TERenderer.getInstance().renderFrame(floorGen.getFloorArray(), currentLocation(),
-                    this, floorGen.getMobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), getCurrentLocation(),
+                    this, chunk.mobs());
             StdDraw.pause(100);
             if (this.currHealth == 0) {
-                floorGen.setTile(currentLoc, tileCurrentlyOn);
+                chunk.setTile(currentLoc, tileCurrentlyOn);
                 GameServices.getInstance().setGameStatus(GameStatus.LOST);
             } else {
-                floorGen.setTile(currentLoc,
+                chunk.setTile(currentLoc,
                         AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
             }
-            TERenderer.getInstance().renderFrame(floorGen.getFloorArray(), currentLoc, this,
-                    floorGen.getMobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), currentLoc, this,
+                    chunk.mobs());
         }
     }
 
     @Override
     public boolean canMoveTo(Point p) {
-        synchronized (floorGen) {
-            return floorGen.isInBounds(p) && Tileset.reachableEntityTiles.contains(floorGen.getTile(p));
+        synchronized (chunk) {
+            return chunk.isInBounds(p) && Tileset.reachableEntityTiles.contains(chunk.getTile(p));
         }
     }
 
     @Override
     public void move(char c) {
-        synchronized (floorGen) {
-            Point location = currentLocation();
+        synchronized (chunk) {
+            Point location = getCurrentLocation();
             if (c == 'w') {
                 currentlyFacing = Direction.UP;
                 moveHelper(location.addDirection(Direction.UP, 1));
@@ -206,7 +228,6 @@ public class Player implements Entity, Serializable {
                 currentlyFacing = Direction.RIGHT;
                 moveHelper(location.addDirection(Direction.RIGHT, 1));
             }
-            System.out.println(currentLoc);
         }
     }
 
@@ -217,15 +238,14 @@ public class Player implements Entity, Serializable {
      *               from the current location of the player.
      */
     private void moveHelper(Point newLoc) {
-        synchronized (floorGen) {
-            System.out.println(canMoveTo(newLoc));
+        synchronized (chunk) {
             if (canMoveTo(newLoc)) {
-                floorGen.setTile(currentLoc, tileCurrentlyOn);
-                tileCurrentlyOn = floorGen.getTile(newLoc);
+                chunk.setTile(currentLoc, tileCurrentlyOn);
+                tileCurrentlyOn = chunk.getTile(newLoc);
                 if(tileCurrentlyOn.equals(Tileset.TREE)) {
-                    tileCurrentlyOn = floorGen.getChunkData().tileMap().get("floor").copyOf();
+                    tileCurrentlyOn = chunk.getChunkData().getTileMap().get("floor").copyOf();
                 }
-                floorGen.setTile(newLoc, AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
+                chunk.setTile(newLoc, AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
                 currentLoc = newLoc;
             }
         }
@@ -255,9 +275,10 @@ public class Player implements Entity, Serializable {
     }
 
     /**
-     * @return Returns the current location of the player.
+     * @return Returns the current location of the player inside the current chunk.
+     *  (Relative position).
      */
-    public Point currentLocation() {
+    public Point getCurrentLocation() {
         return currentLoc;
     }
 
@@ -303,5 +324,9 @@ public class Player implements Entity, Serializable {
 
     public List<Interactable> getInventory() {
         return inventory;
+    }
+
+    public void setChunk(Chunk chunk) {
+        this.chunk = chunk;
     }
 }

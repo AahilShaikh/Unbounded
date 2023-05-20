@@ -25,6 +25,12 @@ public class Point implements Serializable {
         return p;
     }
 
+    public Point add(int x, int y) {
+        this.x += x;
+        this.y += y;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Point)) {

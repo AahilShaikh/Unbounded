@@ -38,7 +38,7 @@ public class Monster implements Entity, Serializable {
     @Override
     public void init(Chunk chunk) {
         this.chunk = chunk;
-        this.tileCurrentlyOn = this.chunk.getChunkData().tileMap().get("floor").copyOf();
+        this.tileCurrentlyOn = this.chunk.getChunkData().getTileMap().get("floor").copyOf();
         this.chunk.setTileCopy(currentLoc, AVATAR.copyOf());
     }
 
@@ -75,15 +75,15 @@ public class Monster implements Entity, Serializable {
             this.currHealth -= damageDealt;
             chunk.setTile(currentLoc,
                     Tileset.ATTACKED_MONSTER.copyOf().lighten(tileCurrentlyOn.getShade()));
-            TERenderer.getInstance().renderFrame(chunk.getMap(),
-                    GameServices.getInstance().getPlayer().currentLocation(), GameServices.getInstance().getPlayer(), chunk.getMobs());
+            TERenderer.getInstance().renderFrame(chunk.map(),
+                    GameServices.getInstance().getPlayer().getCurrentLocation(), GameServices.getInstance().getPlayer(), chunk.mobs());
             StdDraw.pause(100);
             if (this.currHealth <= 0) {
                 hidePath();
                 //if the monster has been killed, remove it from the field
                 chunk.setTile(currentLoc, tileCurrentlyOn.copyOf().lighten(tileCurrentlyOn.getShade()));
-                chunk.getMobs().remove(this);
-                chunk.getMobs().forEach((Monster mob) -> {
+                chunk.mobs().remove(this);
+                chunk.mobs().forEach((Monster mob) -> {
                     if (!mob.isFrozen) {
                         mob.showPath();
                     }
@@ -92,8 +92,8 @@ public class Monster implements Entity, Serializable {
                 chunk.setTile(currentLoc, Tileset.MONSTER.copyOf()
                         .lighten(tileCurrentlyOn.getShade()));
             }
-            TERenderer.getInstance().renderFrame(chunk.getMap(),
-                    GameServices.getInstance().getPlayer().currentLocation(), GameServices.getInstance().getPlayer(), chunk.getMobs());
+            TERenderer.getInstance().renderFrame(chunk.map(),
+                    GameServices.getInstance().getPlayer().getCurrentLocation(), GameServices.getInstance().getPlayer(), chunk.mobs());
 
         }
     }
@@ -114,7 +114,7 @@ public class Monster implements Entity, Serializable {
         synchronized (chunk) {
             TETile tile = chunk.getTile(p);
             return chunk.isInBounds(p)
-                    && (tile.equals(chunk.getChunkData().tileMap().get("floor")) || tile.equals(GameServices.getInstance().getPlayer().getAVATAR())
+                    && (tile.equals(chunk.getChunkData().getTileMap().get("floor")) || tile.equals(GameServices.getInstance().getPlayer().getAVATAR())
                     || tile.equals(Tileset.FLOWER.copyOf()) || tile.equals(Tileset.TREE));
         }
     }
@@ -122,7 +122,7 @@ public class Monster implements Entity, Serializable {
 
     @Override
     public void move() {
-        if (isFrozen && currentLoc.manhattanDistance(GameServices.getInstance().getPlayer().currentLocation()) <= 25) {
+        if (isFrozen && currentLoc.manhattanDistance(GameServices.getInstance().getPlayer().getCurrentLocation()) <= 25) {
             isFrozen = false;
         }
         if (!isFrozen) {
@@ -134,7 +134,7 @@ public class Monster implements Entity, Serializable {
     private void moveHelper() {
         synchronized (chunk) {
             hidePath();
-            Tile tile = optimalPathToPlayer(currentLoc, GameServices.getInstance().getPlayer().currentLocation());
+            Tile tile = optimalPathToPlayer(currentLoc, GameServices.getInstance().getPlayer().getCurrentLocation());
             if (tile != null) {
                 List<Point> moves = new ArrayList<>();
                 tile = tile.getParent();
@@ -157,19 +157,19 @@ public class Monster implements Entity, Serializable {
                     chunk.setTile(currentLoc, tileCurrentlyOn);
                     tileCurrentlyOn = chunk.getTile(moves.get(0));
                     if (tileCurrentlyOn.equals(Tileset.TREE)) {
-                        tileCurrentlyOn = chunk.getChunkData().tileMap().get("floor").copyOf();
+                        tileCurrentlyOn = chunk.getChunkData().getTileMap().get("floor").copyOf();
                     }
                     chunk.setTile(moves.get(0),
                             Tileset.MONSTER.copyOf().lighten(tileCurrentlyOn.getShade()));
                     currentLoc = moves.get(0);
                 }
-                chunk.getMobs().forEach((Monster mob) -> {
+                chunk.mobs().forEach((Monster mob) -> {
                     if (!mob.isFrozen) {
                         mob.showPath();
                     }
                 });
             }
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.getMobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.mobs());
             attack();
         }
 
@@ -177,7 +177,7 @@ public class Monster implements Entity, Serializable {
 
     public void showPath() {
         synchronized (chunk) {
-            Tile tile = optimalPathToPlayer(currentLoc, GameServices.getInstance().getPlayer().currentLocation());
+            Tile tile = optimalPathToPlayer(currentLoc, GameServices.getInstance().getPlayer().getCurrentLocation());
             if (tile != null) {
                 List<Point> moves = new ArrayList<>();
                 tile = tile.getParent();
@@ -204,7 +204,7 @@ public class Monster implements Entity, Serializable {
         synchronized (chunk) {
             for (Point p : this.pathBlocks) {
                 if (chunk.getTile(p).equals(Tileset.TREE)) {
-                    chunk.setTileCopy(p, chunk.getChunkData().tileMap().get("floor").copyOf());
+                    chunk.setTileCopy(p, chunk.getChunkData().getTileMap().get("floor").copyOf());
                 }
             }
         }

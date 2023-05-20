@@ -1,15 +1,13 @@
 package Core;
 
 import Core.DataStructures.GameStatus;
-import Core.DataStructures.Tile;
+import Core.DataStructures.Point;
 import Core.Entities.Lamp;
 import Core.Entities.Monster;
 import Core.Input.InputSource;
 import Core.Input.KeyboardInputSource;
 import Core.Input.StringInputSource;
 import TileEngine.TERenderer;
-import TileEngine.TETile;
-import TileEngine.Tileset;
 import edu.princeton.cs.algs4.StdDraw;
 
 import java.awt.*;
@@ -40,11 +38,12 @@ public class GameStateManager implements Serializable {
             return;
         }
 //        worldEngine.createDungeon(100);
-        worldEngine.createOutside();
+        worldEngine.setCurrentChunk(worldEngine.createOutside(new Point(Constants.STAGE_WIDTH/2,
+                Constants.STAGE_HEIGHT/2)));
         worldEngine.createPlayer();
-        TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getMap(),
-                GameServices.getInstance().getPlayer().currentLocation(), GameServices.getInstance().getPlayer(),
-                worldEngine.getCurrentChunk().getMobs());
+        TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().map(),
+                GameServices.getInstance().getPlayer().getCurrentLocation(), GameServices.getInstance().getPlayer(),
+                worldEngine.getCurrentChunk().mobs());
         //get user input
         startUserInput();
     }
@@ -71,31 +70,37 @@ public class GameStateManager implements Serializable {
                 new Save(this, GameServices.getInstance(), TERenderer.getInstance()).saveGame(Constants.SAVE_FILE);
                 return;
             } else if (c == 'w' || c == 's' || c == 'a' || c == 'd') {
-                //move the player
-                GameServices.getInstance().getPlayer().move(c);
-                //move the monsters
-                if (userInput instanceof KeyboardInputSource) {
-                    worldEngine.getCurrentChunk().getMobs().forEach(Monster::move);
+                //If moving to next chunk
+                if(!worldEngine.getCurrentChunk().isInBounds(c)) {
+                    System.out.println("IASUFGASU");
+                    worldEngine.tileNextChunk(c);
+                } else {
+                    //move the player
+                    GameServices.getInstance().getPlayer().move(c);
+                    //move the monsters
+                    if (userInput instanceof KeyboardInputSource) {
+                        worldEngine.getCurrentChunk().mobs().forEach(Monster::move);
+                    }
                 }
             } else if (c == 'n') {
                 //interact with the nearest object
-                GameServices.getInstance().getPlayer().interactWith(worldEngine.getCurrentChunk().getInteractables());
+                GameServices.getInstance().getPlayer().interactWith(worldEngine.getCurrentChunk().interactables());
             } else if (c == 'm') {
                 //make the player attack
                 GameServices.getInstance().getPlayer().attack();
                 //make the mobs next to the player attack
-                worldEngine.getCurrentChunk().getMobs().forEach(Monster::attack);
+                worldEngine.getCurrentChunk().mobs().forEach(Monster::attack);
             } else if (c == 'p') {
                 //show the path from each mob to the player
-                worldEngine.getCurrentChunk().getMobs().forEach(Monster::changeShowPath);
+                worldEngine.getCurrentChunk().mobs().forEach(Monster::changeShowPath);
             } else if (c == 'l') {
                 //turn all lamps off / on
                 lamps.forEach(Lamp::action);
             }
             TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getFloorArray(),
-                    GameServices.getInstance().getPlayer().currentLocation(),
+                    GameServices.getInstance().getPlayer().getCurrentLocation(),
                     GameServices.getInstance().getPlayer(),
-                    worldEngine.getCurrentChunk().getMobs());
+                    worldEngine.getCurrentChunk().mobs());
         }
         if(GameServices.getInstance().getGameStatus().equals(GameStatus.LOST)) {
             gameOverScreen();

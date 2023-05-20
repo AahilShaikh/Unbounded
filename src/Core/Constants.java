@@ -8,8 +8,8 @@ public class Constants {
     public static final int VIEWPORT_WIDTH = 95;
     public static final int GUI_HEIGHT = 5;
     public static final int VIEWPORT_HEIGHT = 51;
-    public static final int STAGE_WIDTH = 120;
-    public static final int STAGE_HEIGHT = 120;
+    public static final int STAGE_WIDTH = 121;
+    public static final int STAGE_HEIGHT = 121;
 
     /**
      * The place where game saves are saved.

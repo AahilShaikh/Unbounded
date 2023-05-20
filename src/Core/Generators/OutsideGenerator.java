@@ -18,34 +18,40 @@ public class OutsideGenerator extends Generator {
     public Chunk generate() {
         for (int x = 0; x < getMap().length; x++) {
             for (int y = 0; y < getMap()[0].length; y++) {
-                double noise = SimplexNoise.sample(x, y, 7);
+                //TODO
+                int halfX = getMap().length / 2;
+                int halfY = getMap()[0].length / 2;
+
+                int centerX = getChunkData().getChunkCenter().getX();
+                int centerY = getChunkData().getChunkCenter().getY();
+                double noise = SimplexNoise.sample(centerX - halfX + x, centerY - halfY + y, 7);
                 TETile tile;
                 if(noise < -0.5) {
-                    tile = getChunkData().tileMap().get("deep ocean");
+                    tile = getChunkData().getTileMap().get("deep ocean");
                 } else if(noise < -0.4) {
-                    tile = getChunkData().tileMap().get("ocean");
+                    tile = getChunkData().getTileMap().get("ocean");
                 } else if(noise < -0.2) {
-                    tile = getChunkData().tileMap().get("sea");
+                    tile = getChunkData().getTileMap().get("sea");
                 } else if(noise < -0.1) {
-                    tile = getChunkData().tileMap().get("beach");
+                    tile = getChunkData().getTileMap().get("beach");
                 } else if(noise < 0.2) {
-                    tile = getChunkData().tileMap().get("plains");
+                    tile = getChunkData().getTileMap().get("plains");
                 } else if(noise < 0.3) {
-                    tile = getChunkData().tileMap().get("forest");
+                    tile = getChunkData().getTileMap().get("forest");
                 } else if(noise < 0.4) {
-                    tile = getChunkData().tileMap().get("deep forest");
+                    tile = getChunkData().getTileMap().get("deep forest");
                 } else if(noise < 0.5) {
-                    tile = getChunkData().tileMap().get("hills");
+                    tile = getChunkData().getTileMap().get("hills");
                 } else if(noise < 0.6) {
-                    tile = getChunkData().tileMap().get("cliffs");
+                    tile = getChunkData().getTileMap().get("cliffs");
                 } else if(noise < 0.7) {
-                    tile = getChunkData().tileMap().get("mountains");
+                    tile = getChunkData().getTileMap().get("mountains");
                 } else if(noise < 0.8) {
-                    tile = getChunkData().tileMap().get("high mountains");
+                    tile = getChunkData().getTileMap().get("high mountains");
                 } else if(noise < 0.9) {
-                    tile = getChunkData().tileMap().get("icy mountains");
+                    tile = getChunkData().getTileMap().get("icy mountains");
                 } else {
-                    tile = getChunkData().tileMap().get("ice");
+                    tile = getChunkData().getTileMap().get("ice");
                 }
 
                 setTileCopy(new Point(x, y), tile);

@@ -1,6 +1,7 @@
 package Core;
 
 import Core.DataStructures.ChunkData;
+import Core.DataStructures.Direction;
 import Core.DataStructures.Point;
 import Core.DataStructures.Room;
 import Core.Entities.*;
@@ -12,36 +13,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Chunk implements Serializable {
-
-    private final ChunkData chunkData;
-    /**
-     * 2d array that represents the world.
-     */
-    private final TETile[][] map;
-
-    /**
-     * List of interactables on the dungeon.
-     */
-    private final List<Interactable> interactables;
-
-    private final List<Monster> mobs;
-
-    private final ArrayList<Room> rooms;
+/**
+ * @param map           2d array that represents the world.
+ * @param interactables List of interactables on the dungeon.
+ */
+public record Chunk(TETile[][] map, List<Interactable> interactables, List<Monster> mobs,
+                    ChunkData getChunkData, ArrayList<Room> rooms) implements Serializable {
 
     public Chunk(TETile[][] map, List<Interactable> interactables, List<Monster> mobs,
-          ChunkData chunkData, ArrayList<Room> rooms) {
+                 ChunkData getChunkData, ArrayList<Room> rooms) {
         this.map = map;
         this.interactables = interactables;
         this.mobs = mobs;
-        this.chunkData = chunkData;
+        this.getChunkData = getChunkData;
         this.rooms = rooms;
 
         //init all interactables - includes things like assigning them to this chunk
         for (Interactable i : interactables) {
             i.init(this);
         }
-        for(Monster m : mobs) {
+        for (Monster m : mobs) {
             m.init(this);
         }
     }
@@ -70,9 +61,23 @@ public class Chunk implements Serializable {
         return p.getX() < map.length && p.getX() >= 0 && p.getY() < map[0].length && p.getY() >= 0;
     }
 
+    public boolean isInBounds(char c) {
+        Point currLoc = GameServices.getInstance().getPlayer().getCurrentLocation();
+        if (c == 'w') {
+           return isInBounds( currLoc.addDirection(Direction.UP, 1));
+        } else if (c == 'a') {
+            return isInBounds( currLoc.addDirection(Direction.LEFT, 1));
+        } else if (c == 's') {
+            return isInBounds( currLoc.addDirection(Direction.DOWN, 1));
+        } else if (c == 'd') {
+            return isInBounds( currLoc.addDirection(Direction.RIGHT, 1));
+        }
+        throw new IllegalArgumentException("Given character is not w, a, s, d");
+    }
+
     public boolean isBlocking(Point p) {
         TETile t = getTile(p);
-        return t.equals(chunkData.tileMap().get("wall")) || t.equals(Tileset.LOCKED_DOOR);
+        return t.equals(getChunkData.getTileMap().get("wall")) || t.equals(Tileset.LOCKED_DOOR);
     }
 
     /**
@@ -95,12 +100,9 @@ public class Chunk implements Serializable {
     /**
      * @return Returns the list of interactable tiles on this dungeon.
      */
-    public List<Interactable> getInteractables() {
+    @Override
+    public List<Interactable> interactables() {
         return interactables;
-    }
-
-    public synchronized List<Monster> getMobs() {
-        return mobs;
     }
 
     public ArrayList<Lamp> getLamps() {
@@ -120,14 +122,6 @@ public class Chunk implements Serializable {
     }
 
     public ChunkData getChunkData() {
-        return chunkData;
-    }
-
-    public TETile[][] getMap() {
-        return map;
-    }
-
-    public ArrayList<Room> getRooms() {
-        return rooms;
+        return getChunkData;
     }
 }

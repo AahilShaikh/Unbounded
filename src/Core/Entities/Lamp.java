@@ -63,8 +63,8 @@ public class Lamp implements Interactable, Serializable {
     private void turnOn() {
         synchronized (chunk) {
             for (Point point : reach) {
-                if (chunk.getTile(point).equals(chunk.getChunkData().tileMap().get("wall"))
-                        || chunk.getTile(point).equals(chunk.getChunkData().tileMap().get("base"))) {
+                if (chunk.getTile(point).equals(chunk.getChunkData().getTileMap().get("wall"))
+                        || chunk.getTile(point).equals(chunk.getChunkData().getTileMap().get("base"))) {
                     continue;
                 }
                 chunk.getTile(point).lighten(Math.abs(Math
@@ -74,7 +74,7 @@ public class Lamp implements Interactable, Serializable {
             }
             isOn = true;
             updateEntities();
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.getMobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.mobs());
         }
     }
 
@@ -85,7 +85,7 @@ public class Lamp implements Interactable, Serializable {
             }
             isOn = false;
             updateEntities();
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.getMobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.mobs());
         }
     }
 
@@ -93,10 +93,10 @@ public class Lamp implements Interactable, Serializable {
     public void updateEntities() {
         synchronized (chunk) {
             if (isOn) {
-                if (reach.contains(GameServices.getInstance().getPlayer().currentLocation())) {
+                if (reach.contains(GameServices.getInstance().getPlayer().getCurrentLocation())) {
                     GameServices.getInstance().getPlayer().setTileCurrentlyOn(GameServices.getInstance().getPlayer().getTileCurrentlyOn().lighten(Math.abs(Math
                             .abs(furthestTile.manhattanDistance(currentLoc))
-                            - Math.abs(GameServices.getInstance().getPlayer().currentLocation().manhattanDistance(currentLoc)))));
+                            - Math.abs(GameServices.getInstance().getPlayer().getCurrentLocation().manhattanDistance(currentLoc)))));
                 }
                 for (Monster mob : mobs) {
                     if (reach.contains(mob.getCurrentLoc())) {

@@ -1,7 +1,7 @@
 package Core;
 
 import Core.DataStructures.ChunkData;
-import Core.DataStructures.Tile;
+import Core.DataStructures.Point;
 import Core.Entities.Player;
 import Core.Generators.DungeonGenerator;
 import Core.Generators.OutsideGenerator;
@@ -11,7 +11,6 @@ import TileEngine.Tileset;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -51,24 +50,23 @@ public class WorldEngine implements Serializable {
      *
      * @param roomTries The number of times a room should be attempted to be placed on the floor.
      */
-    public void createDungeon(int roomTries) {
+    public Chunk createDungeon(int roomTries, Point chunkLocation) {
         long floorSeed = worldEngineRng.nextInt();
         Map<String, TETile> tileMap = Map.ofEntries(
                 new AbstractMap.SimpleEntry<>("floor", Tileset.FLOOR),
                 new AbstractMap.SimpleEntry<>("wall", Tileset.WALL),
                 new AbstractMap.SimpleEntry<>("base", Tileset.NOTHING)
         );
-        currentChunk = new DungeonGenerator(floorSeed, roomTries,
+        return new DungeonGenerator(floorSeed, roomTries,
                 TERenderer.getInstance().getStageWidth(),
-                TERenderer.getInstance().getStageHeight(), new ChunkData(worldEngineRng.nextInt(),
-                worldEngineRng.nextInt(), worldEngineRng.nextInt(),
-                worldEngineRng.nextInt(), floorSeed, tileMap)).generate();
+                TERenderer.getInstance().getStageHeight(), new ChunkData(floorSeed,
+                tileMap, ChunkData.ChunkType.DUNGEON, chunkLocation)).generate();
     }
 
     /**
      * Creates a floor.
      */
-    public void createOutside() {
+    public Chunk createOutside(Point chunkLocation) {
         long floorSeed = worldEngineRng.nextInt();
         Map<String, TETile> tileMap = Map.ofEntries(
                 new AbstractMap.SimpleEntry<>("deep ocean", Tileset.DEEP_OCEAN),
@@ -85,12 +83,36 @@ public class WorldEngine implements Serializable {
                 new AbstractMap.SimpleEntry<>("icy mountains", Tileset.ICY_MOUNTAINS),
                 new AbstractMap.SimpleEntry<>("ice", Tileset.ICE)
         );
-        currentChunk = new OutsideGenerator(floorSeed,
+        return new OutsideGenerator(floorSeed,
                 TERenderer.getInstance().getStageWidth(),
-                TERenderer.getInstance().getStageHeight(), new ChunkData(worldEngineRng.nextInt(),
-                worldEngineRng.nextInt(), worldEngineRng.nextInt(),
-                worldEngineRng.nextInt(), floorSeed, tileMap)).generate();
+                TERenderer.getInstance().getStageHeight(),
+                new ChunkData(floorSeed, tileMap, ChunkData.ChunkType.OUTSIDE, chunkLocation)).generate();
+
     }
+
+    public void tileNextChunk(char direction) {
+        if(direction == 'w') {
+            Chunk nextChunk = createOutside(currentChunk.getChunkData().getChunkCenter().add(0,
+                    Constants.STAGE_HEIGHT));
+            Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
+            Point newPosInChunk = new Point(currPos.getX(), 0);
+            if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
+                currentChunk.getChunkData().setNorthChunkData(nextChunk.getChunkData());
+                nextChunk.getChunkData().setSouthChunkData(currentChunk.getChunkData());
+                currentChunk = nextChunk;
+                System.out.println("YAAAAAAAASSSSSSSSSSSS");
+            }
+            System.out.println("OKAAAY");
+
+        } else if (direction == 's') {
+            Chunk nextChunk = createOutside(currentChunk.getChunkData().getChunkCenter().add(0,
+                    Constants.STAGE_HEIGHT));
+            Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
+            Point newPosInChunk = new Point(currPos.getX(), 0);
+            GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk);
+        }
+    }
+
 
     /**
      * Creates a new player.
@@ -118,5 +140,9 @@ public class WorldEngine implements Serializable {
 
     public Chunk getCurrentChunk() {
         return currentChunk;
+    }
+
+    public void setCurrentChunk(Chunk currentChunk) {
+        this.currentChunk = currentChunk;
     }
 }
