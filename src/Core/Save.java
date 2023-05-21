@@ -26,8 +26,6 @@ public record Save(GameStateManager gameManager, GameServices gameServices,
             manager.setUserInput(load.gameManager().getUserInput());
 
             TERenderer.getInstance().renderFrame(manager.getWorldEngine().getCurrentChunk().getFloorArray(),
-                    GameServices.getInstance().getPlayer().getCurrentLocation(),
-                    GameServices.getInstance().getPlayer(),
                     manager.getWorldEngine().getCurrentChunk().mobs());
         } catch (IOException | ClassCastException
                  | ClassNotFoundException exception) {

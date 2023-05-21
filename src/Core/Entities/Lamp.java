@@ -74,7 +74,7 @@ public class Lamp implements Interactable, Serializable {
             }
             isOn = true;
             updateEntities();
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.mobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), chunk.mobs());
         }
     }
 
@@ -85,7 +85,7 @@ public class Lamp implements Interactable, Serializable {
             }
             isOn = false;
             updateEntities();
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), GameServices.getInstance().getPlayer(), chunk.mobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), chunk.mobs());
         }
     }
 

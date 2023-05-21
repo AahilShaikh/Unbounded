@@ -58,8 +58,7 @@ public class Player implements Entity, Serializable {
                     attackLocation = attackLocation.addDirection(attackDirection, 1);
                     prevLocation = prevLocation.addDirection(attackDirection, 1);
                     count++;
-                    TERenderer.getInstance().renderFrame(floorGen.getFloorArray(),
-                            player.getCurrentLocation(), player, floorGen.mobs());
+                    TERenderer.getInstance().renderFrame(floorGen.getFloorArray(), floorGen.mobs());
                 }
                 if (floorGen.getTile(attackLocation.addDirection(attackDirection, -1))
                         .equals(Tileset.FLOWER)) {
@@ -67,7 +66,7 @@ public class Player implements Entity, Serializable {
                 }
                 //Render attack
                 TERenderer.getInstance().renderFrame(floorGen.getFloorArray(),
-                        player.getCurrentLocation(), player, floorGen.mobs());
+                         floorGen.mobs());
                 attackMonster(attackLocation);
             }
         }
@@ -194,8 +193,8 @@ public class Player implements Entity, Serializable {
             decreaseHealth(damageDealt);
             chunk.setTile(currentLoc,
                     Tileset.ATTACKED_AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), getCurrentLocation(),
-                    this, chunk.mobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(),
+                    chunk.mobs());
             StdDraw.pause(100);
             if (this.currHealth == 0) {
                 chunk.setTile(currentLoc, tileCurrentlyOn);
@@ -204,8 +203,7 @@ public class Player implements Entity, Serializable {
                 chunk.setTile(currentLoc,
                         AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
             }
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), currentLoc, this,
-                    chunk.mobs());
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(),chunk.mobs());
         }
     }
 

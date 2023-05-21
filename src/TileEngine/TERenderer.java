@@ -4,6 +4,7 @@ import Core.DataStructures.Point;
 import Core.Entities.Interactable;
 import Core.Entities.Monster;
 import Core.Entities.Player;
+import Core.GameServices;
 import edu.princeton.cs.algs4.StdDraw;
 
 import java.awt.*;
@@ -15,25 +16,21 @@ import java.util.List;
  */
 public class TERenderer implements Serializable {
     private static final int TILE_SIZE = 16;
+    public static TERenderer instance;
     private int viewportWidth;
     private int viewportHeight;
-
     private int stageWidth;
     private int stageHeight;
     private int xOffset;
     private int yOffset;
-    private Point center;
-
     private boolean isOn = true;
-
-    public static TERenderer instance;
 
     private TERenderer(boolean isOn) {
         this.isOn = isOn;
     }
 
     public static TERenderer getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new TERenderer(true);
         }
         return instance;
@@ -50,7 +47,7 @@ public class TERenderer implements Serializable {
      * TETile[50][25] array, the renderer will leave 3 tiles blank on the left, 7 tiles blank
      * on the right, 4 tiles blank on the bottom, and 1 tile blank on the top.
      *
-     * @param viewportWidth width of the window in tiles
+     * @param viewportWidth  width of the window in tiles
      * @param viewportHeight height of the window in tiles.
      */
     public void initialize(int viewportWidth, int viewportHeight, int stageWidth, int stageHeight,
@@ -118,34 +115,25 @@ public class TERenderer implements Serializable {
         }
     }
 
-
-    public synchronized void renderFrame(TETile[][] currentFloorArray, Point p, Player player,
+    public synchronized void renderFrame(TETile[][] currentFloorArray,
                                          List<Monster> mobs) {
         if (isOn) {
-            TETile[][] viewPort = centerViewPort(currentFloorArray, p);
-            updateGUI(player, mobs, viewPort);
-        }
-    }
-
-    public synchronized void renderFrame(TETile[][] currentFloorArray, Player player,
-                                         List<Monster> mobs) {
-        if (isOn) {
-            TETile[][] viewPort = centerViewPort(currentFloorArray);
-            updateGUI(player, mobs, viewPort);
+            TETile[][] viewPort = centerViewPort(currentFloorArray,
+                    GameServices.getInstance().getPlayer().getCurrentLocation());
+            updateGUI(mobs, viewPort);
         }
     }
 
     public synchronized TETile[][] centerViewPort(TETile[][] currentFloorArray, Point p) {
-        this.center = p;
         TETile[][] viewPortArray = new TETile[viewportWidth][viewportHeight - yOffset];
         int x = p.getX() - (viewportWidth / 2);
         int y = p.getY() - (viewportHeight / 2);
 
         if (x < 0) {
-            x += -x;
+            x -= x;
         }
         if (y < 0) {
-            y += -y;
+            y -= y;
         }
         if (x + viewportWidth > currentFloorArray.length) {
             x -= (x + viewportWidth - currentFloorArray.length);
@@ -161,28 +149,24 @@ public class TERenderer implements Serializable {
         return viewPortArray;
     }
 
-    public synchronized TETile[][] centerViewPort(TETile[][] currentFloorArray) {
-        return centerViewPort(currentFloorArray, center);
-    }
-
-
-    public synchronized void updateGUI(Player player, List<Monster> mobs, TETile[][] arr) {
+    public synchronized void updateGUI(List<Monster> mobs, TETile[][] arr) {
         if (isOn) {
             StdDraw.setPenRadius(0.005);
             StdDraw.setPenColor(Color.DARK_GRAY);
             StdDraw.line(0, yOffset, viewportWidth, yOffset);
-            updateHealthBar(player);
-            updateManaBar(player);
+            updateHealthBar();
+            updateManaBar();
             updateEnemyCounter(mobs);
             updateMouseTile(arr);
-            updateInventory(player);
+            updateInventory();
             StdDraw.show();
         }
 
     }
 
-    public synchronized void updateHealthBar(Player player) {
+    public synchronized void updateHealthBar() {
         if (isOn) {
+            Player player = GameServices.getInstance().getPlayer();
             int x = 3;
             int y = 4;
             StdDraw.setPenColor(Color.RED);
@@ -197,8 +181,9 @@ public class TERenderer implements Serializable {
         }
     }
 
-    public synchronized void updateManaBar(Player player) {
+    public synchronized void updateManaBar() {
         if (isOn) {
+            Player player = GameServices.getInstance().getPlayer();
             int bottomY = 2;
             int bottomX = 3;
             StdDraw.setPenColor(Color.BLUE);
@@ -236,8 +221,9 @@ public class TERenderer implements Serializable {
         }
     }
 
-    public synchronized void updateInventory(Player player) {
+    public synchronized void updateInventory() {
         if (isOn) {
+            Player player = GameServices.getInstance().getPlayer();
             int x = 35;
             int y = 4;
             for (Interactable i : player.getInventory()) {
@@ -248,6 +234,7 @@ public class TERenderer implements Serializable {
             }
         }
     }
+
     public boolean isOn() {
         return isOn;
     }
@@ -260,31 +247,15 @@ public class TERenderer implements Serializable {
         return viewportWidth;
     }
 
-    public void setViewportWidth(int viewportWidth) {
-        this.viewportWidth = viewportWidth;
-    }
-
     public int getViewportHeight() {
         return viewportHeight;
-    }
-
-    public void setViewportHeight(int viewportHeight) {
-        this.viewportHeight = viewportHeight;
     }
 
     public int getStageWidth() {
         return stageWidth;
     }
 
-    public void setStageWidth(int stageWidth) {
-        this.stageWidth = stageWidth;
-    }
-
     public int getStageHeight() {
         return stageHeight;
-    }
-
-    public void setStageHeight(int stageHeight) {
-        this.stageHeight = stageHeight;
     }
 }

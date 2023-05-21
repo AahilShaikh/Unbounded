@@ -131,7 +131,7 @@ public class WorldEngine implements Serializable {
             if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
                 currentChunk.getChunkData().setEastChunkData(nextChunk.getChunkData());
                 nextChunk.getChunkData().setWestChunkData(currentChunk.getChunkData());
-                currentChunk = nextChunk;   
+                currentChunk = nextChunk;
             }
         }
     }

@@ -42,7 +42,6 @@ public class GameStateManager implements Serializable {
                 Constants.STAGE_HEIGHT/2)));
         worldEngine.createPlayer();
         TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().map(),
-                GameServices.getInstance().getPlayer().getCurrentLocation(), GameServices.getInstance().getPlayer(),
                 worldEngine.getCurrentChunk().mobs());
         //get user input
         startUserInput();
@@ -102,8 +101,6 @@ public class GameStateManager implements Serializable {
                 lamps.forEach(Lamp::action);
             }
             TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getFloorArray(),
-                    GameServices.getInstance().getPlayer().getCurrentLocation(),
-                    GameServices.getInstance().getPlayer(),
                     worldEngine.getCurrentChunk().mobs());
         }
         if(GameServices.getInstance().getGameStatus().equals(GameStatus.LOST)) {
