@@ -101,7 +101,6 @@ public class WorldEngine implements Serializable {
                 nextChunk.getChunkData().setSouthChunkData(currentChunk.getChunkData());
                 currentChunk = nextChunk;
             }
-
         } else if (direction == 's') {
             Chunk nextChunk = createOutside(currentChunk.getChunkData().getChunkCenter().add(0,
                     -Constants.STAGE_HEIGHT));
@@ -111,6 +110,28 @@ public class WorldEngine implements Serializable {
                 currentChunk.getChunkData().setSouthChunkData(nextChunk.getChunkData());
                 nextChunk.getChunkData().setNorthChunkData(currentChunk.getChunkData());
                 currentChunk = nextChunk;
+            }
+        } else if (direction == 'a') {
+            Chunk nextChunk =
+                    createOutside(currentChunk.getChunkData().getChunkCenter().add(
+                            -Constants.STAGE_WIDTH,0));
+            Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
+            Point newPosInChunk = new Point(Constants.STAGE_WIDTH - 1 , currPos.getY());
+            if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
+                currentChunk.getChunkData().setWestChunkData(nextChunk.getChunkData());
+                nextChunk.getChunkData().setEastChunkData(currentChunk.getChunkData());
+                currentChunk = nextChunk;
+            }
+        } else if(direction =='d') {
+            Chunk nextChunk =
+                    createOutside(currentChunk.getChunkData().getChunkCenter().add(
+                            Constants.STAGE_WIDTH,0));
+            Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
+            Point newPosInChunk = new Point(0 , currPos.getY());
+            if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
+                currentChunk.getChunkData().setEastChunkData(nextChunk.getChunkData());
+                nextChunk.getChunkData().setWestChunkData(currentChunk.getChunkData());
+                currentChunk = nextChunk;   
             }
         }
     }
