@@ -193,8 +193,6 @@ public class Player implements Entity, Serializable {
             decreaseHealth(damageDealt);
             chunk.setTile(currentLoc,
                     Tileset.ATTACKED_AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(),
-                    chunk.mobs());
             StdDraw.pause(100);
             if (this.currHealth == 0) {
                 chunk.setTile(currentLoc, tileCurrentlyOn);
@@ -203,7 +201,6 @@ public class Player implements Entity, Serializable {
                 chunk.setTile(currentLoc,
                         AVATAR.copyOf().lighten(tileCurrentlyOn.getShade()));
             }
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(),chunk.mobs());
         }
     }
 

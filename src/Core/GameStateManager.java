@@ -41,13 +41,13 @@ public class GameStateManager implements Serializable {
         worldEngine.setCurrentChunk(worldEngine.createOutside(new Point(Constants.STAGE_WIDTH/2,
                 Constants.STAGE_HEIGHT/2)));
         worldEngine.createPlayer();
-        TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().map(),
-                worldEngine.getCurrentChunk().mobs());
         //get user input
         startUserInput();
     }
 
     public void startUserInput() {
+        TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getFloorArray(),
+                worldEngine.getCurrentChunk().mobs());
         ArrayList<Lamp> lamps = worldEngine.getCurrentChunk().getLamps();
         while (GameServices.getInstance().getGameStatus() == GameStatus.IN_PROGRESS) {
             //slowly increase player health and mana
