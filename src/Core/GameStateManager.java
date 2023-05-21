@@ -72,7 +72,6 @@ public class GameStateManager implements Serializable {
             } else if (c == 'w' || c == 's' || c == 'a' || c == 'd') {
                 //If moving to next chunk
                 if(!worldEngine.getCurrentChunk().isInBounds(c)) {
-                    System.out.println("IASUFGASU");
                     worldEngine.tileNextChunk(c);
                 } else {
                     //move the player
@@ -81,6 +80,11 @@ public class GameStateManager implements Serializable {
                     if (userInput instanceof KeyboardInputSource) {
                         worldEngine.getCurrentChunk().mobs().forEach(Monster::move);
                     }
+                    int x =
+                            worldEngine.getCurrentChunk().getChunkData().getChunkCenter().getX() - (Constants.STAGE_WIDTH/2) + GameServices.getInstance().getPlayer().getCurrentLocation().getX();
+                    int y =
+                            worldEngine.getCurrentChunk().getChunkData().getChunkCenter().getY() - (Constants.STAGE_HEIGHT/2) + GameServices.getInstance().getPlayer().getCurrentLocation().getY();
+                    System.out.println(new Point(x, y));
                 }
             } else if (c == 'n') {
                 //interact with the nearest object

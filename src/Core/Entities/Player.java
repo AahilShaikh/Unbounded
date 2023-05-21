@@ -127,15 +127,17 @@ public class Player implements Entity, Serializable {
      * Spawns the player in the current chunk, randomly.
      */
     public void spawn() {
-        for(int row = 0; row < this.chunk.map().length; row++) {
-            for(int col = 0; col < this.chunk.map()[0].length; col++) {
-                if(canMoveTo(new Point(row, col))) {
-                    this.currentLoc = new Point(row, col);
-                    this.tileCurrentlyOn = this.chunk.map()[row][col].copyOf();
-                    this.chunk.setTileCopy(currentLoc, AVATAR);
-                    return;
-                } else {
-                    System.out.println("OOPS");
+        synchronized (chunk) {
+            for(int row = 0; row < this.chunk.map().length; row++) {
+                for(int col = 0; col < this.chunk.map()[0].length; col++) {
+                    if(canMoveTo(new Point(row, col))) {
+                        this.currentLoc = new Point(row, col);
+                        this.tileCurrentlyOn = this.chunk.map()[row][col].copyOf();
+                        this.chunk.setTileCopy(currentLoc, AVATAR);
+                        return;
+                    } else {
+                        System.out.println("OOPS");
+                    }
                 }
             }
         }
@@ -148,16 +150,19 @@ public class Player implements Entity, Serializable {
      * @return whether the spawn was successful
      */
     public boolean spawn(Point p, Chunk chunk) {
-        System.out.println("IS in bounds: " + chunk.isInBounds(p));
-        System.out.println("The tile is: " + chunk.getTile(p));
-        if(chunk.isInBounds(p) && Tileset.reachableEntityTiles.contains(chunk.getTile(p))) {
-            currentLoc = p;
-            this.tileCurrentlyOn = chunk.map()[p.getX()][p.getY()].copyOf();
-            chunk.setTileCopy(p, AVATAR);
-            this.chunk = chunk;
-            return true;
+        synchronized (chunk) {
+            System.out.println("IS in bounds: " + chunk.isInBounds(p));
+            System.out.println("The tile is: " + chunk.getTile(p));
+            if(chunk.isInBounds(p) && Tileset.reachableEntityTiles.contains(chunk.getTile(p))) {
+                this.chunk = chunk;
+                this.currentLoc = p;
+                this.tileCurrentlyOn = chunk.map()[p.getX()][p.getY()].copyOf();
+                System.out.println("Tile currently on: " + tileCurrentlyOn);
+                this.chunk.setTileCopy(p, AVATAR);
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     @Override

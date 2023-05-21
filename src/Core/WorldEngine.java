@@ -100,16 +100,18 @@ public class WorldEngine implements Serializable {
                 currentChunk.getChunkData().setNorthChunkData(nextChunk.getChunkData());
                 nextChunk.getChunkData().setSouthChunkData(currentChunk.getChunkData());
                 currentChunk = nextChunk;
-                System.out.println("YAAAAAAAASSSSSSSSSSSS");
             }
-            System.out.println("OKAAAY");
 
         } else if (direction == 's') {
             Chunk nextChunk = createOutside(currentChunk.getChunkData().getChunkCenter().add(0,
-                    Constants.STAGE_HEIGHT));
+                    -Constants.STAGE_HEIGHT));
             Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
-            Point newPosInChunk = new Point(currPos.getX(), 0);
-            GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk);
+            Point newPosInChunk = new Point(currPos.getX(), Constants.STAGE_HEIGHT - 1);
+            if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
+                currentChunk.getChunkData().setSouthChunkData(nextChunk.getChunkData());
+                nextChunk.getChunkData().setNorthChunkData(currentChunk.getChunkData());
+                currentChunk = nextChunk;
+            }
         }
     }
 

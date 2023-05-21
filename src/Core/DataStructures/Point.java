@@ -26,9 +26,10 @@ public class Point implements Serializable {
     }
 
     public Point add(int x, int y) {
-        this.x += x;
-        this.y += y;
-        return this;
+        Point r = new Point(this.x, this.y);
+        r.x += x;
+        r.y += y;
+        return r;
     }
 
     @Override
