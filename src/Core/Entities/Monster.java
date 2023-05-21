@@ -75,7 +75,6 @@ public class Monster implements Entity, Serializable {
             this.currHealth -= damageDealt;
             chunk.setTile(currentLoc,
                     Tileset.ATTACKED_MONSTER.copyOf().lighten(tileCurrentlyOn.getShade()));
-            TERenderer.getInstance().renderFrame(chunk.map(), chunk.mobs());
             StdDraw.pause(100);
             if (this.currHealth <= 0) {
                 hidePath();
@@ -91,8 +90,6 @@ public class Monster implements Entity, Serializable {
                 chunk.setTile(currentLoc, Tileset.MONSTER.copyOf()
                         .lighten(tileCurrentlyOn.getShade()));
             }
-            TERenderer.getInstance().renderFrame(chunk.map(), chunk.mobs());
-
         }
     }
 
@@ -167,10 +164,8 @@ public class Monster implements Entity, Serializable {
                     }
                 });
             }
-            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), chunk.mobs());
             attack();
         }
-
     }
 
     public void showPath() {
