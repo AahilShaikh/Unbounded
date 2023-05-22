@@ -27,13 +27,6 @@ public class Generator {
      */
     private final ArrayList<Room> rooms;
 
-    /**
-     * List of interactables on the dungeon.
-     */
-    private final List<Interactable> interactables = new CopyOnWriteArrayList<>();
-
-    private final List<Monster> mobs = new CopyOnWriteArrayList<>();
-
     private final ChunkData chunkData;
 
     public Generator(long seed, int width, int height, ChunkData chunkData) {
@@ -126,14 +119,6 @@ public class Generator {
 
     public ArrayList<Room> getRooms() {
         return rooms;
-    }
-
-    public List<Interactable> getInteractables() {
-        return interactables;
-    }
-
-    public List<Monster> getMobs() {
-        return mobs;
     }
 
     public ChunkData getChunkData() {

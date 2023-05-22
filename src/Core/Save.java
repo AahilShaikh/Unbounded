@@ -26,7 +26,7 @@ public record Save(GameStateManager gameManager, GameServices gameServices,
             manager.setUserInput(load.gameManager().getUserInput());
 
             TERenderer.getInstance().renderFrame(manager.getWorldEngine().getCurrentChunk().getFloorArray(),
-                    manager.getWorldEngine().getCurrentChunk().mobs());
+                    manager.getWorldEngine().getCurrentChunk().getChunkData().getMobs());
         } catch (IOException | ClassCastException
                  | ClassNotFoundException exception) {
             throw new IllegalArgumentException(exception);

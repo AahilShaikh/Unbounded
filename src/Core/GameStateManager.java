@@ -37,17 +37,17 @@ public class GameStateManager implements Serializable {
             startUserInput();
             return;
         }
-//        worldEngine.createDungeon(100);
-        worldEngine.setCurrentChunk(worldEngine.createOutside(new Point(Constants.STAGE_WIDTH/2,
+        worldEngine.setCurrentChunk(worldEngine.createDungeon(100, new Point(Constants.STAGE_WIDTH/2,
                 Constants.STAGE_HEIGHT/2)));
+//        worldEngine.setCurrentChunk(worldEngine.createOutside(new Point(Constants.STAGE_WIDTH/2,
+//                Constants.STAGE_HEIGHT/2)));
         worldEngine.createPlayer();
-        //get user input
         startUserInput();
     }
 
     public void startUserInput() {
         TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getFloorArray(),
-                worldEngine.getCurrentChunk().mobs());
+                worldEngine.getCurrentChunk().getChunkData().getMobs());
         ArrayList<Lamp> lamps = worldEngine.getCurrentChunk().getLamps();
         while (GameServices.getInstance().getGameStatus() == GameStatus.IN_PROGRESS) {
             //slowly increase player health and mana
@@ -77,7 +77,7 @@ public class GameStateManager implements Serializable {
                     GameServices.getInstance().getPlayer().move(c);
                     //move the monsters
                     if (userInput instanceof KeyboardInputSource) {
-                        worldEngine.getCurrentChunk().mobs().forEach(Monster::move);
+                        worldEngine.getCurrentChunk().getChunkData().getMobs().forEach(Monster::move);
                     }
                     int x =
                             worldEngine.getCurrentChunk().getChunkData().getChunkCenter().getX() - (Constants.STAGE_WIDTH/2) + GameServices.getInstance().getPlayer().getCurrentLocation().getX();
@@ -87,21 +87,21 @@ public class GameStateManager implements Serializable {
                 }
             } else if (c == 'n') {
                 //interact with the nearest object
-                GameServices.getInstance().getPlayer().interactWith(worldEngine.getCurrentChunk().interactables());
+                GameServices.getInstance().getPlayer().interactWith(worldEngine.getCurrentChunk().getChunkData().getInteractables());
             } else if (c == 'm') {
                 //make the player attack
                 GameServices.getInstance().getPlayer().attack();
                 //make the mobs next to the player attack
-                worldEngine.getCurrentChunk().mobs().forEach(Monster::attack);
+                worldEngine.getCurrentChunk().getChunkData().getMobs().forEach(Monster::attack);
             } else if (c == 'p') {
                 //show the path from each mob to the player
-                worldEngine.getCurrentChunk().mobs().forEach(Monster::changeShowPath);
+                worldEngine.getCurrentChunk().getChunkData().getMobs().forEach(Monster::changeShowPath);
             } else if (c == 'l') {
                 //turn all lamps off / on
                 lamps.forEach(Lamp::action);
             }
             TERenderer.getInstance().renderFrame(worldEngine.getCurrentChunk().getFloorArray(),
-                    worldEngine.getCurrentChunk().mobs());
+                    worldEngine.getCurrentChunk().getChunkData().getMobs());
         }
         if(GameServices.getInstance().getGameStatus().equals(GameStatus.LOST)) {
             gameOverScreen();

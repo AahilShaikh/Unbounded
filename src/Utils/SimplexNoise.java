@@ -1,6 +1,10 @@
 package Utils;
 
-public class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
+import Core.Entities.Interactable;
+
+public class SimplexNoise {
+    /** Seed for the simplex noise generator*/
+    public static Long seed = null;
     private static final Grad[] grad3 = {new Grad(1,1,0),new Grad(-1,1,0),new Grad(1,-1,0),new Grad(-1,-1,0),
             new Grad(1,0,1),new Grad(-1,0,1),new Grad(1,0,-1),new Grad(-1,0,-1),
             new Grad(0,1,1),new Grad(0,-1,1),new Grad(0,1,-1),new Grad(0,-1,-1)};

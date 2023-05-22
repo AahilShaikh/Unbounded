@@ -30,7 +30,7 @@ public class Key implements Interactable, Serializable {
     @Override
     public void action() {
         GameServices.getInstance().getPlayer().addToInventory(this);
-        chunk.interactables().remove(this);
+        chunk.getChunkData().getInteractables().remove(this);
         chunk.setTile(currLoc,
                 tileCurrentlyOn.copyOf().lighten(chunk.getTile(currLoc).getShade()));
     }

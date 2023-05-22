@@ -58,7 +58,8 @@ public class Player implements Entity, Serializable {
                     attackLocation = attackLocation.addDirection(attackDirection, 1);
                     prevLocation = prevLocation.addDirection(attackDirection, 1);
                     count++;
-                    TERenderer.getInstance().renderFrame(floorGen.getFloorArray(), floorGen.mobs());
+                    TERenderer.getInstance().renderFrame(floorGen.getFloorArray(),
+                            floorGen.getChunkData().getMobs());
                 }
                 if (floorGen.getTile(attackLocation.addDirection(attackDirection, -1))
                         .equals(Tileset.FLOWER)) {
@@ -66,7 +67,7 @@ public class Player implements Entity, Serializable {
                 }
                 //Render attack
                 TERenderer.getInstance().renderFrame(floorGen.getFloorArray(),
-                         floorGen.mobs());
+                         floorGen.getChunkData().getMobs());
                 attackMonster(attackLocation);
             }
         }
@@ -80,7 +81,7 @@ public class Player implements Entity, Serializable {
         private void attackMonster(Point p) {
             synchronized (floorGen) {
                 int index = -1;
-                ArrayList<Monster> mobs = new ArrayList<>(floorGen.mobs());
+                ArrayList<Monster> mobs = new ArrayList<>(floorGen.getChunkData().getMobs());
                 for (int i = 0; i < mobs.size(); i++) {
                     if (mobs.get(i).sameLocation(p)) {
                         index = i;
@@ -88,7 +89,7 @@ public class Player implements Entity, Serializable {
                     }
                 }
                 if (index != -1) {
-                    floorGen.mobs().get(index).getDamaged(player.getDamage());
+                    floorGen.getChunkData().getMobs().get(index).getDamaged(player.getDamage());
                 }
             }
         }

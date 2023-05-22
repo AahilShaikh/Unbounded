@@ -29,10 +29,10 @@ public class DungeonGenerator extends Generator {
         //remove unnecessary tiles
         removeUnnecessaryTiles();
         fillInCorners();
-        //populate the monster with entities and getInteractables()
+        //populate the monster with entities and getChunkData().getInteractables()
         populateMonsters();
         placeLamps();
-        return new Chunk(getMap(), getInteractables(), getMobs(), getChunkData(), getRooms());
+        return new Chunk(getMap(), getChunkData(), getRooms());
     }
 
     /**
@@ -188,20 +188,20 @@ public class DungeonGenerator extends Generator {
                                     && getTile(right1).equals(getChunkData().getTileMap().get("wall"))) && (!isInBounds(right2)
                                     || getTile(right2).equals(getChunkData().getTileMap().get("wall")))) {
                                 setTileCopy(p, Tileset.LOCKED_DOOR);
-                                getInteractables().add(new Door(p));
+                                getChunkData().getInteractables().add(new Door(p));
                             } else if ((isInBounds(up1) && getTile(up1).equals(getChunkData().getTileMap().get("wall")))
                                     && (!isInBounds(up2)
                                     || getTile(up2).equals(getChunkData().getTileMap().get("wall"))) && (isInBounds(down1)
                                     && getTile(down1).equals(getChunkData().getTileMap().get("wall"))) && (!isInBounds(down2)
                                     || getTile(down2).equals(getChunkData().getTileMap().get("wall")))) {
                                 setTileCopy(p, Tileset.LOCKED_DOOR);
-                                getInteractables().add(new Door(p));
+                                getChunkData().getInteractables().add(new Door(p));
                             }
                         }
                     }
                 }
                 setTile(room.getCenter(), Tileset.TROPHY);
-                getInteractables().add(new Trophy(room.getCenter()));
+                getChunkData().getInteractables().add(new Trophy(room.getCenter()));
                 room.setLocked(true);
                 break;
             }
@@ -214,7 +214,7 @@ public class DungeonGenerator extends Generator {
         int count = 0;
         for (Room room : getRooms()) {
             if (!room.isLocked()) {
-                getInteractables().add(new Key(room.getCenter(), this));
+                getChunkData().getInteractables().add(new Key(room.getCenter(), this));
                 count++;
                 if (count > 2) {
                     break;
@@ -263,7 +263,7 @@ public class DungeonGenerator extends Generator {
                 int y = getRng().nextInt(room.getY(), room.getY() + room.getHeight());
                 Point p = new Point(x, y);
                 if (getTile(p).equals(getChunkData().getTileMap().get("floor").copyOf())) {
-                    getMobs().add(new Monster( Tileset.MONSTER.copyOf(), p, 50));
+                    getChunkData().getMobs().add(new Monster( Tileset.MONSTER.copyOf(), p, 50));
                     setTileCopy(p, Tileset.MONSTER);
                     count++;
                 }
@@ -280,7 +280,7 @@ public class DungeonGenerator extends Generator {
                 int y = getRng().nextInt(room.getY() + 2, room.getY() + room.getHeight() - 2);
                 Point p = new Point(x, y);
                 if (getTile(p).equals(getChunkData().getTileMap().get("floor").copyOf())) {
-                    getInteractables().add(new Lamp(p, new ArrayList<>(getMobs())));
+                    getChunkData().getInteractables().add(new Lamp(p, new ArrayList<>(getChunkData().getMobs())));
                     setTileCopy(p, Tileset.LIGHT);
                     count++;
                 }

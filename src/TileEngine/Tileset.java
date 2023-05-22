@@ -22,10 +22,9 @@ public class Tileset {
             "Player");
     //Monster tiles
     public static final TETile ATTACKED_AVATAR = new TETile('@', Color.PINK, baseColor, "Player");
-    public static final TETile MONSTER = new TETile('M', Color.RED, baseColor, "Monster",
-            "./src/Assets/monster.png");
+    public static final TETile MONSTER = new TETile('M', Color.RED, baseColor, "Monster");
     public static final TETile ATTACKED_MONSTER = new TETile('M', Color.WHITE, baseColor,
-            "Monster", "./src/Assets/attackedMonster.png");
+            "Monster");
 
     //Dungeon tiles
     public static final TETile FLOOR = new TETile('·', Color.WHITE, baseColor, "Floor");

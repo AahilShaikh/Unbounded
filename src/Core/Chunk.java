@@ -15,24 +15,19 @@ import java.util.stream.Collectors;
 
 /**
  * @param map           2d array that represents the world.
- * @param interactables List of interactables on the dungeon.
  */
-public record Chunk(TETile[][] map, List<Interactable> interactables, List<Monster> mobs,
-                    ChunkData getChunkData, ArrayList<Room> rooms) implements Serializable {
+public record Chunk(TETile[][] map, ChunkData getChunkData, ArrayList<Room> rooms) implements Serializable {
 
-    public Chunk(TETile[][] map, List<Interactable> interactables, List<Monster> mobs,
-                 ChunkData getChunkData, ArrayList<Room> rooms) {
+    public Chunk(TETile[][] map, ChunkData getChunkData, ArrayList<Room> rooms) {
         this.map = map;
-        this.interactables = interactables;
-        this.mobs = mobs;
         this.getChunkData = getChunkData;
         this.rooms = rooms;
 
         //init all interactables - includes things like assigning them to this chunk
-        for (Interactable i : interactables) {
+        for (Interactable i : getChunkData.getInteractables()) {
             i.init(this);
         }
-        for (Monster m : mobs) {
+        for (Monster m : getChunkData.getMobs()) {
             m.init(this);
         }
     }
@@ -97,28 +92,20 @@ public record Chunk(TETile[][] map, List<Interactable> interactables, List<Monst
         return this.map;
     }
 
-    /**
-     * @return Returns the list of interactable tiles on this dungeon.
-     */
-    @Override
-    public List<Interactable> interactables() {
-        return interactables;
-    }
-
     public ArrayList<Lamp> getLamps() {
-        return interactables.stream().filter(element -> element instanceof Lamp)
+        return getChunkData.getInteractables().stream().filter(element -> element instanceof Lamp)
                 .map(interactable -> (Lamp) interactable)
                 .collect(Collectors.toCollection(ArrayList<Lamp>::new));
     }
 
     public ArrayList<Key> getKeys() {
-        return interactables.stream().filter(element -> element instanceof Key)
+        return getChunkData.getInteractables().stream().filter(element -> element instanceof Key)
                 .map(interactable -> (Key) interactable)
                 .collect(Collectors.toCollection(ArrayList<Key>::new));
     }
 
     public Trophy getTrophy() {
-        return (Trophy) interactables.stream().filter(element -> element instanceof Trophy).findFirst().get();
+        return (Trophy) getChunkData.getInteractables().stream().filter(element -> element instanceof Trophy).findFirst().get();
     }
 
     public ChunkData getChunkData() {

@@ -57,7 +57,7 @@ public class OutsideGenerator extends Generator {
                 setTileCopy(new Point(x, y), tile);
             }
         }
-        return new Chunk(getMap(), getInteractables(), getMobs(), getChunkData(), getRooms());
+        return new Chunk(getMap(), getChunkData(), getRooms());
     }
 
 

@@ -75,13 +75,14 @@ public class Monster implements Entity, Serializable {
             this.currHealth -= damageDealt;
             chunk.setTile(currentLoc,
                     Tileset.ATTACKED_MONSTER.copyOf().lighten(tileCurrentlyOn.getShade()));
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), chunk.getChunkData().getMobs());
             StdDraw.pause(100);
             if (this.currHealth <= 0) {
                 hidePath();
                 //if the monster has been killed, remove it from the field
                 chunk.setTile(currentLoc, tileCurrentlyOn.copyOf().lighten(tileCurrentlyOn.getShade()));
-                chunk.mobs().remove(this);
-                chunk.mobs().forEach((Monster mob) -> {
+                chunk.getChunkData().getMobs().remove(this);
+                chunk.getChunkData().getMobs().forEach((Monster mob) -> {
                     if (!mob.isFrozen) {
                         mob.showPath();
                     }
@@ -90,6 +91,7 @@ public class Monster implements Entity, Serializable {
                 chunk.setTile(currentLoc, Tileset.MONSTER.copyOf()
                         .lighten(tileCurrentlyOn.getShade()));
             }
+            TERenderer.getInstance().renderFrame(chunk.getFloorArray(), chunk.getChunkData().getMobs());
         }
     }
 
@@ -158,7 +160,7 @@ public class Monster implements Entity, Serializable {
                             Tileset.MONSTER.copyOf().lighten(tileCurrentlyOn.getShade()));
                     currentLoc = moves.get(0);
                 }
-                chunk.mobs().forEach((Monster mob) -> {
+                chunk.getChunkData().getMobs().forEach((Monster mob) -> {
                     if (!mob.isFrozen) {
                         mob.showPath();
                     }

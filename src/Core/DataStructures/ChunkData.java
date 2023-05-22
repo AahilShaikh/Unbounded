@@ -1,9 +1,14 @@
 package Core.DataStructures;
 
+import Core.Entities.Interactable;
+import Core.Entities.Monster;
 import TileEngine.TETile;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class ChunkData implements Serializable {
@@ -15,10 +20,12 @@ public class ChunkData implements Serializable {
     private Map<String, TETile> tileMap;
     private ChunkType type;
     private Point chunkCenter;
+    private List<Interactable> interactables;
+    private List<Monster> mobs;
 
     public ChunkData(long chunkSeed, ChunkData northChunkData, ChunkData southChunkData,
                      ChunkData westChunkData, ChunkData eastChunkData, Map<String, TETile> tileMap,
-                     ChunkType type, Point chunkCenter) {
+                     ChunkType type, Point chunkCenter, List<Interactable> interactables, List<Monster> mobs) {
         this.northChunkData = northChunkData;
         this.southChunkData = southChunkData;
         this.westChunkData = westChunkData;
@@ -27,12 +34,17 @@ public class ChunkData implements Serializable {
         this.tileMap = tileMap;
         this.type = type;
         this.chunkCenter = chunkCenter;
+        this.interactables = new ArrayList<>();
+        this.mobs = new ArrayList<>();
     }
-    public ChunkData(long chunkSeed, Map<String, TETile> tileMap, ChunkType type, Point chunkCenter) {
+    public ChunkData(long chunkSeed, Map<String, TETile> tileMap, ChunkType type,
+                     Point chunkCenter) {
         this.chunkSeed = chunkSeed;
         this.tileMap = tileMap;
         this.type = type;
         this.chunkCenter = chunkCenter;
+        this.interactables = new CopyOnWriteArrayList<>();
+        this.mobs = new CopyOnWriteArrayList<>();
     }
 
     public enum ChunkType {
@@ -100,7 +112,11 @@ public class ChunkData implements Serializable {
         return chunkCenter;
     }
 
-    public void setChunkCenter(Point chunkCenter) {
-        this.chunkCenter = chunkCenter;
+    public List<Interactable> getInteractables() {
+        return interactables;
+    }
+
+    public List<Monster> getMobs() {
+        return mobs;
     }
 }
