@@ -15,8 +15,8 @@ public class DungeonGenerator extends Generator {
      */
     private final int maxRoomTries;
     
-    public DungeonGenerator(long seed, int maxRoomTries, int width, int height, ChunkData chunkData) {
-        super(seed, width, height, chunkData);
+    public DungeonGenerator(int maxRoomTries, int width, int height, ChunkData chunkData) {
+        super(width, height, chunkData);
         this.maxRoomTries = maxRoomTries;
     }
 

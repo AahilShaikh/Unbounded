@@ -29,8 +29,8 @@ public class Generator {
 
     private final ChunkData chunkData;
 
-    public Generator(long seed, int width, int height, ChunkData chunkData) {
-        rng = new Random(seed);
+    public Generator(int width, int height, ChunkData chunkData) {
+        rng = new Random(chunkData.getChunkSeed());
         this.chunkData = chunkData;
         this.map = new TETile[width][height];
         this.rooms = new ArrayList<>();

@@ -10,15 +10,15 @@ import Utils.SimplexNoise;
 import java.awt.*;
 
 public class OutsideGenerator extends Generator {
-    public OutsideGenerator(long seed, int width, int height, ChunkData chunkData) {
-        super(seed, width, height, chunkData);
+    public OutsideGenerator(int width, int height, ChunkData chunkData) {
+        super(width, height, chunkData);
+        SimplexNoise.setSeed(chunkData.getChunkSeed());
     }
 
     @Override
     public Chunk generate() {
         for (int x = 0; x < getMap().length; x++) {
             for (int y = 0; y < getMap()[0].length; y++) {
-                //TODO
                 int halfX = getMap().length / 2;
                 int halfY = getMap()[0].length / 2;
 

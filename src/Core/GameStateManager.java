@@ -37,10 +37,10 @@ public class GameStateManager implements Serializable {
             startUserInput();
             return;
         }
-        worldEngine.setCurrentChunk(worldEngine.createDungeon(100, new Point(Constants.STAGE_WIDTH/2,
-                Constants.STAGE_HEIGHT/2)));
-//        worldEngine.setCurrentChunk(worldEngine.createOutside(new Point(Constants.STAGE_WIDTH/2,
+//        worldEngine.setCurrentChunk(worldEngine.createDungeon(100, new Point(Constants.STAGE_WIDTH/2,
 //                Constants.STAGE_HEIGHT/2)));
+        worldEngine.setCurrentChunk(worldEngine.createOutside(new Point(Constants.STAGE_WIDTH/2,
+                Constants.STAGE_HEIGHT/2)));
         worldEngine.createPlayer();
         startUserInput();
     }

@@ -2,6 +2,8 @@ package Utils;
 
 import Core.Entities.Interactable;
 
+import java.util.Random;
+
 public class SimplexNoise {
     /** Seed for the simplex noise generator*/
     public static Long seed = null;
@@ -32,7 +34,7 @@ public class SimplexNoise {
         }
     }
 
-    // Skewing and unskewing factors for 2, 3, and 4 dimensions
+    // Skewing and unskewing factors for 2 dimensions
     private static final double F2 = 0.5*(Math.sqrt(3.0)-1.0);
     private static final double G2 = (3.0-Math.sqrt(3.0))/6.0;
 
@@ -44,6 +46,22 @@ public class SimplexNoise {
 
     private static double dot(Grad g, double x, double y) {
         return g.x*x + g.y*y; }
+
+    public static void setSeed(long seed) {
+        if (SimplexNoise.seed != null && SimplexNoise.seed == seed) {
+            return;
+        }
+        SimplexNoise.seed = seed;
+        Random r = new Random(seed);
+        for (int i = 0; i < p.length; i++) {
+            p[i] = (short) r.nextInt(255);
+        }
+
+        for (int i = 0; i < 512; i++) {
+            perm[i] = p[i & 255];
+            permMod12[i] = (short) (perm[i] % 12);
+        }
+    }
 
     public static double sample(double x, double y, int numOctaves) {
         double result = 0;

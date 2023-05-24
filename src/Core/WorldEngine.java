@@ -8,6 +8,7 @@ import Core.Generators.OutsideGenerator;
 import TileEngine.TERenderer;
 import TileEngine.TETile;
 import TileEngine.Tileset;
+import Utils.SimplexNoise;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
@@ -57,7 +58,7 @@ public class WorldEngine implements Serializable {
                 new AbstractMap.SimpleEntry<>("wall", Tileset.WALL),
                 new AbstractMap.SimpleEntry<>("base", Tileset.NOTHING)
         );
-        return new DungeonGenerator(floorSeed, roomTries,
+        return new DungeonGenerator(roomTries,
                 TERenderer.getInstance().getStageWidth(),
                 TERenderer.getInstance().getStageHeight(), new ChunkData(floorSeed,
                 tileMap, ChunkData.ChunkType.DUNGEON, chunkLocation)).generate();
@@ -67,7 +68,13 @@ public class WorldEngine implements Serializable {
      * Creates a floor.
      */
     public Chunk createOutside(Point chunkLocation) {
-        long floorSeed = worldEngineRng.nextInt();
+        long floorSeed;
+        if(SimplexNoise.seed != null) {
+            floorSeed = SimplexNoise.seed;
+        } else {
+            floorSeed = worldEngineRng.nextInt();
+        }
+
         Map<String, TETile> tileMap = Map.ofEntries(
                 new AbstractMap.SimpleEntry<>("deep ocean", Tileset.DEEP_OCEAN),
                 new AbstractMap.SimpleEntry<>("ocean", Tileset.OCEAN),
@@ -83,11 +90,9 @@ public class WorldEngine implements Serializable {
                 new AbstractMap.SimpleEntry<>("icy mountains", Tileset.ICY_MOUNTAINS),
                 new AbstractMap.SimpleEntry<>("ice", Tileset.ICE)
         );
-        return new OutsideGenerator(floorSeed,
-                TERenderer.getInstance().getStageWidth(),
+        return new OutsideGenerator(TERenderer.getInstance().getStageWidth(),
                 TERenderer.getInstance().getStageHeight(),
                 new ChunkData(floorSeed, tileMap, ChunkData.ChunkType.OUTSIDE, chunkLocation)).generate();
-
     }
 
     public void tileNextChunk(char direction) {
