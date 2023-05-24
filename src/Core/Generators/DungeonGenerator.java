@@ -264,7 +264,6 @@ public class DungeonGenerator extends Generator {
                 Point p = new Point(x, y);
                 if (getTile(p).equals(getChunkData().getTileMap().get("floor").copyOf())) {
                     getChunkData().getMobs().add(new Monster( Tileset.MONSTER.copyOf(), p, 50));
-                    setTileCopy(p, Tileset.MONSTER);
                     count++;
                 }
             }

@@ -38,7 +38,7 @@ public class Monster implements Entity, Serializable {
     @Override
     public void init(Chunk chunk) {
         this.chunk = chunk;
-        this.tileCurrentlyOn = this.chunk.getChunkData().getTileMap().get("floor").copyOf();
+        this.tileCurrentlyOn = this.chunk.getTile(currentLoc);
         this.chunk.setTileCopy(currentLoc, AVATAR.copyOf());
     }
 
@@ -51,7 +51,8 @@ public class Monster implements Entity, Serializable {
     public void attack() {
         synchronized (chunk) {
             for (Direction dir : Direction.ORDINAL) {
-                if (chunk.getTile(currentLoc.addDirection(dir, 1)).equals(GameServices.getInstance().getPlayer().getAVATAR())) {
+                Point selectedPosition = currentLoc.addDirection(dir, 1);
+                if (chunk.isInBounds(selectedPosition) && chunk.getTile(selectedPosition).equals(GameServices.getInstance().getPlayer().getAVATAR())) {
                     GameServices.getInstance().getPlayer().getDamaged(getDamage());
                     break;
                 }
@@ -109,10 +110,7 @@ public class Monster implements Entity, Serializable {
 
     public boolean canMove(Point p) {
         synchronized (chunk) {
-            TETile tile = chunk.getTile(p);
-            return chunk.isInBounds(p)
-                    && (tile.equals(chunk.getChunkData().getTileMap().get("floor")) || tile.equals(GameServices.getInstance().getPlayer().getAVATAR())
-                    || tile.equals(Tileset.FLOWER.copyOf()) || tile.equals(Tileset.TREE));
+            return chunk.isInBounds(p) && Tileset.reachableEntityTiles.contains(chunk.getTile(p));
         }
     }
 

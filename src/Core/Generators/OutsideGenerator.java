@@ -1,13 +1,19 @@
 package Core.Generators;
 
 import Core.Chunk;
+import Core.Constants;
 import Core.DataStructures.ChunkData;
 import Core.DataStructures.Point;
+import Core.DataStructures.Room;
+import Core.DataStructures.Tile;
+import Core.Entities.Monster;
 import TileEngine.TETile;
+import TileEngine.Tileset;
 import Utils.PerlinNoise;
 import Utils.SimplexNoise;
 
 import java.awt.*;
+import java.lang.constant.Constable;
 
 public class OutsideGenerator extends Generator {
     public OutsideGenerator(int width, int height, ChunkData chunkData) {
@@ -57,7 +63,21 @@ public class OutsideGenerator extends Generator {
                 setTileCopy(new Point(x, y), tile);
             }
         }
+        populateMonsters();
         return new Chunk(getMap(), getChunkData(), getRooms());
+    }
+
+    private void populateMonsters() {
+        int mobCount = 0;
+        while (mobCount != 20) {
+            int x = getRng().nextInt(0, Constants.STAGE_WIDTH);
+            int y = getRng().nextInt(0, Constants.STAGE_HEIGHT);
+            Point p = new Point(x, y);
+            if (Tileset.reachableEntityTiles.contains(getTile(p))) {
+                getChunkData().getMobs().add(new Monster( Tileset.MONSTER.copyOf(), p, 50));
+                mobCount++;
+            }
+        }
     }
 
 
