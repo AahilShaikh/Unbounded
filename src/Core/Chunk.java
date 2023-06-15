@@ -10,6 +10,7 @@ import TileEngine.Tileset;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public record Chunk(TETile[][] map, ChunkData getChunkData, ArrayList<Room> room
         this.map = map;
         this.getChunkData = getChunkData;
         this.rooms = rooms;
-
+        System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
         //init all interactables - includes things like assigning them to this chunk
         for (Interactable i : getChunkData.getInteractables()) {
             i.init(this);

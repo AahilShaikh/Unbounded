@@ -38,6 +38,9 @@ public class Monster implements Entity, Serializable {
     @Override
     public void init(Chunk chunk) {
         this.chunk = chunk;
+        if(this.chunk.getTile(currentLoc).equals(this.AVATAR)) {
+            return;
+        }
         this.tileCurrentlyOn = this.chunk.getTile(currentLoc);
         this.chunk.setTileCopy(currentLoc, AVATAR.copyOf());
     }
