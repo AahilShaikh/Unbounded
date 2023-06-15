@@ -110,14 +110,14 @@ public class Monster implements Entity, Serializable {
 
     public boolean canMove(Point p) {
         synchronized (chunk) {
-            return chunk.isInBounds(p) && Tileset.reachableEntityTiles.contains(chunk.getTile(p));
+            return chunk.isInBounds(p) && Tileset.reachablePathfindingTiles.contains(chunk.getTile(p));
         }
     }
 
 
     @Override
     public void move() {
-        if (isFrozen && currentLoc.manhattanDistance(GameServices.getInstance().getPlayer().getCurrentLocation()) <= 25) {
+        if (isFrozen && currentLoc.manhattanDistance(GameServices.getInstance().getPlayer().getCurrentLocation()) <= Constants.MONSTER_RANGE) {
             isFrozen = false;
         }
         if (!isFrozen) {

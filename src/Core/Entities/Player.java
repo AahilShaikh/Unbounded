@@ -12,6 +12,7 @@ import edu.princeton.cs.algs4.StdDraw;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a player in the game
@@ -130,12 +131,23 @@ public class Player implements Entity, Serializable {
         synchronized (chunk) {
             for(int row = 0; row < this.chunk.map().length; row++) {
                 for(int col = 0; col < this.chunk.map()[0].length; col++) {
-                    if(canMoveTo(new Point(row, col))) {
-                        this.currentLoc = new Point(row, col);
+                    Point loc = new Point(row, col);
+                    Optional<Room> room =
+                            this.chunk.rooms().stream().filter(element -> element.containsPoint(loc)).findFirst();
+                    if(room.isPresent()) {
+                        if(!room.get().isLocked()) {
+                            this.currentLoc = loc;
+                            this.tileCurrentlyOn = this.chunk.map()[row][col].copyOf();
+                            this.chunk.setTileCopy(currentLoc, AVATAR);
+                            return;
+                        }
+                    }else if(canMoveTo(loc)) {
+                        this.currentLoc = loc;
                         this.tileCurrentlyOn = this.chunk.map()[row][col].copyOf();
                         this.chunk.setTileCopy(currentLoc, AVATAR);
                         return;
-                    } else {
+                    }
+                    else {
                         System.out.println("OOPS");
                     }
                 }

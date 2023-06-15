@@ -128,4 +128,8 @@ public class Room implements Serializable {
     public boolean isLocked() {
         return isLocked;
     }
+
+    public boolean containsPoint(Point p) {
+        return (p.x > bottomLeft.x && p.x < bottomRight.x) && (p.y > bottomLeft.y && p.y < topLeft.y);
+    }
 }

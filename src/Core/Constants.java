@@ -17,4 +17,6 @@ public class Constants {
     public static final File SAVE_FILE = new File("save.txt");
 
     public static ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+
+    public static int MONSTER_RANGE = 15;
 }

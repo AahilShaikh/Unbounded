@@ -84,6 +84,17 @@ public class Tileset {
         add(FLOWER);
     }};
 
+    public static ArrayList<TETile> reachablePathfindingTiles = new ArrayList<>() {{
+        add(FLOOR);
+        add(PLAINS);
+        add(BEACH);
+        add(UNLOCKED_DOOR);
+        add(TREE);
+        add(AVATAR);
+        add(FLOWER);
+        add(MONSTER);
+    }};
+
     public static ArrayList<TETile> reachableAttackTiles = new ArrayList<>() {{
         add(FLOOR);
         add(PLAINS);
