@@ -30,15 +30,26 @@ public class GameStateManager implements Serializable {
                 Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
         GameServices.getInstance().initialize(0, GameStatus.IN_PROGRESS);
     }
-    public void startNewGame() {
+    public void startNewDungeonGame() {
         if ((userInput instanceof StringInputSource)
                 && ((StringInputSource) userInput).peekNextKey() == 'l') {
             Save.loadGame(Constants.SAVE_FILE, this);
             startUserInput();
             return;
         }
-//        worldEngine.setCurrentChunk(worldEngine.createDungeon(100, new Point(Constants.STAGE_WIDTH/2,
-//                Constants.STAGE_HEIGHT/2)));
+        worldEngine.setCurrentChunk(worldEngine.createDungeon(100, new Point(Constants.STAGE_WIDTH/2,
+                Constants.STAGE_HEIGHT/2)));
+        worldEngine.createPlayer();
+        startUserInput();
+    }
+
+    public void startNewOutsideGame() {
+        if ((userInput instanceof StringInputSource)
+                && ((StringInputSource) userInput).peekNextKey() == 'l') {
+            Save.loadGame(Constants.SAVE_FILE, this);
+            startUserInput();
+            return;
+        }
         worldEngine.setCurrentChunk(worldEngine.createOutside(new Point(Constants.STAGE_WIDTH/2,
                 Constants.STAGE_HEIGHT/2)));
         worldEngine.createPlayer();
@@ -185,9 +196,13 @@ public class GameStateManager implements Serializable {
                 StdDraw.clear(Color.BLACK);
                 StdDraw.text(newWidth, newHeight + 10, "Enter a Seed:");
                 char c = userInput.getNextKey();
-                if (c == 's') {
+                if (c == 'd') {
                     worldEngine.setWorldEngineRng(Long.parseLong(input));
-                    startNewGame();
+                    startNewDungeonGame();
+                    return;
+                } else if (c == 'o') {
+                    worldEngine.setWorldEngineRng(Long.parseLong(input));
+                    startNewOutsideGame();
                     return;
                 }
                 input += c;

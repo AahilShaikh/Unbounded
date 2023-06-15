@@ -1,6 +1,7 @@
 package Core;
 
 import Core.DataStructures.ChunkData;
+import Core.DataStructures.Direction;
 import Core.DataStructures.Point;
 import Core.Entities.Player;
 import Core.Generators.DungeonGenerator;
@@ -66,7 +67,30 @@ public class WorldEngine implements Serializable {
 
     /**
      * Creates a floor.
+     *
+     * @param roomTries The number of times a room should be attempted to be placed on the floor.
      */
+    public Chunk createDungeon(int roomTries, Point chunkLocation, long floorSeed,
+                               ChunkData data) {
+        Map<String, TETile> tileMap = Map.ofEntries(
+                new AbstractMap.SimpleEntry<>("floor", Tileset.FLOOR),
+                new AbstractMap.SimpleEntry<>("wall", Tileset.WALL),
+                new AbstractMap.SimpleEntry<>("base", Tileset.NOTHING)
+        );
+        return new DungeonGenerator(roomTries,
+                TERenderer.getInstance().getStageWidth(),
+                TERenderer.getInstance().getStageHeight(), data).generate();
+    }
+
+    /**
+     * Creates a floor.
+     */
+    public Chunk createOutside(Point chunkLocation, ChunkData data) {
+        return new OutsideGenerator(TERenderer.getInstance().getStageWidth(),
+                TERenderer.getInstance().getStageHeight(),
+                data).generate();
+    }
+
     public Chunk createOutside(Point chunkLocation) {
         long floorSeed;
         if(SimplexNoise.seed != null) {
@@ -90,15 +114,34 @@ public class WorldEngine implements Serializable {
                 new AbstractMap.SimpleEntry<>("icy mountains", Tileset.ICY_MOUNTAINS),
                 new AbstractMap.SimpleEntry<>("ice", Tileset.ICE)
         );
-        return new OutsideGenerator(TERenderer.getInstance().getStageWidth(),
-                TERenderer.getInstance().getStageHeight(),
-                new ChunkData(floorSeed, tileMap, ChunkData.ChunkType.OUTSIDE, chunkLocation)).generate();
+        return createOutside(chunkLocation, new ChunkData(floorSeed, tileMap,
+                ChunkData.ChunkType.OUTSIDE, chunkLocation));
+    }
+
+    public Chunk getNextChunk(Point newChunkLocation, ChunkData data) {
+        if(data == null) {
+            return createOutside(newChunkLocation);
+        }
+
+        long seed = worldEngineRng.nextInt();
+        if(data.getChunkSeed() != null) {
+            seed = data.getChunkSeed();
+        }
+
+        //Recreate previously generated chunks
+        if(data.getType() == ChunkData.ChunkType.DUNGEON) {
+            System.out.println("DUNGEEEEEEEEEEEEEEON REEEEEECREATION");
+            return createDungeon(100, newChunkLocation, seed, data);
+        } else {
+            System.out.println("OOOOOOOOOOOUTTTTTTTTTSIIIIIIIIIIIIIDE RECREATION");
+            return createOutside(newChunkLocation, data);
+        }
     }
 
     public void tileNextChunk(char direction) {
         if(direction == 'w') {
-            Chunk nextChunk = createOutside(currentChunk.getChunkData().getChunkCenter().add(0,
-                    Constants.STAGE_HEIGHT));
+            Chunk nextChunk = getNextChunk(currentChunk.getChunkData().getChunkCenter().add(0,
+                    Constants.STAGE_HEIGHT), getCurrentChunk().getChunkData().getNorthChunkData());
             Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
             Point newPosInChunk = new Point(currPos.getX(), 0);
             if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
@@ -107,8 +150,8 @@ public class WorldEngine implements Serializable {
                 currentChunk = nextChunk;
             }
         } else if (direction == 's') {
-            Chunk nextChunk = createOutside(currentChunk.getChunkData().getChunkCenter().add(0,
-                    -Constants.STAGE_HEIGHT));
+            Chunk nextChunk = getNextChunk(currentChunk.getChunkData().getChunkCenter().add(0,
+                    -Constants.STAGE_HEIGHT), getCurrentChunk().getChunkData().getSouthChunkData());
             Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
             Point newPosInChunk = new Point(currPos.getX(), Constants.STAGE_HEIGHT - 1);
             if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
@@ -118,8 +161,8 @@ public class WorldEngine implements Serializable {
             }
         } else if (direction == 'a') {
             Chunk nextChunk =
-                    createOutside(currentChunk.getChunkData().getChunkCenter().add(
-                            -Constants.STAGE_WIDTH,0));
+                    getNextChunk(currentChunk.getChunkData().getChunkCenter().add(
+                            -Constants.STAGE_WIDTH,0), getCurrentChunk().getChunkData().getWestChunkData());
             Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
             Point newPosInChunk = new Point(Constants.STAGE_WIDTH - 1 , currPos.getY());
             if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {
@@ -129,8 +172,8 @@ public class WorldEngine implements Serializable {
             }
         } else if(direction =='d') {
             Chunk nextChunk =
-                    createOutside(currentChunk.getChunkData().getChunkCenter().add(
-                            Constants.STAGE_WIDTH,0));
+                    getNextChunk(currentChunk.getChunkData().getChunkCenter().add(
+                            Constants.STAGE_WIDTH,0), getCurrentChunk().getChunkData().getEastChunkData());
             Point currPos = GameServices.getInstance().getPlayer().getCurrentLocation();
             Point newPosInChunk = new Point(0 , currPos.getY());
             if(GameServices.getInstance().getPlayer().spawn(newPosInChunk, nextChunk)) {

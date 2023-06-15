@@ -16,27 +16,12 @@ public class ChunkData implements Serializable {
     private ChunkData southChunkData = null;
     private ChunkData westChunkData = null;
     private ChunkData eastChunkData = null;
-    private long chunkSeed;
+    private Long chunkSeed;
     private Map<String, TETile> tileMap;
     private ChunkType type;
     private Point chunkCenter;
     private List<Interactable> interactables;
     private List<Monster> mobs;
-
-    public ChunkData(long chunkSeed, ChunkData northChunkData, ChunkData southChunkData,
-                     ChunkData westChunkData, ChunkData eastChunkData, Map<String, TETile> tileMap,
-                     ChunkType type, Point chunkCenter, List<Interactable> interactables, List<Monster> mobs) {
-        this.northChunkData = northChunkData;
-        this.southChunkData = southChunkData;
-        this.westChunkData = westChunkData;
-        this.eastChunkData = eastChunkData;
-        this.chunkSeed = chunkSeed;
-        this.tileMap = tileMap;
-        this.type = type;
-        this.chunkCenter = chunkCenter;
-        this.interactables = new ArrayList<>();
-        this.mobs = new ArrayList<>();
-    }
     public ChunkData(long chunkSeed, Map<String, TETile> tileMap, ChunkType type,
                      Point chunkCenter) {
         this.chunkSeed = chunkSeed;
@@ -84,7 +69,7 @@ public class ChunkData implements Serializable {
         this.eastChunkData = eastChunkData;
     }
 
-    public long getChunkSeed() {
+    public Long getChunkSeed() {
         return chunkSeed;
     }
 

@@ -9,7 +9,6 @@ import Core.DataStructures.Tile;
 import Core.Entities.Monster;
 import TileEngine.TETile;
 import TileEngine.Tileset;
-import Utils.PerlinNoise;
 import Utils.SimplexNoise;
 
 import java.awt.*;
@@ -63,7 +62,10 @@ public class OutsideGenerator extends Generator {
                 setTileCopy(new Point(x, y), tile);
             }
         }
-        populateMonsters();
+        if(getChunkData().getMobs().isEmpty()) {
+            populateMonsters();
+        }
+
         return new Chunk(getMap(), getChunkData(), getRooms());
     }
 
