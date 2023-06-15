@@ -260,7 +260,6 @@ public class GameStateManager implements Serializable {
             System.out.println("Interrupted");
         }
         if (TERenderer.getInstance().isOn()) {
-            TERenderer.setInstance(null);
             StdDraw.clear(Color.BLACK);
             float newWidth = (float) TERenderer.getInstance().getViewportWidth() / 2;
             float newHeight = (float) TERenderer.getInstance().getViewportHeight() / 2;
