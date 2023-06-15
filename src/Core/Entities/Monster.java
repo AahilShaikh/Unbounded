@@ -49,7 +49,6 @@ public class Monster implements Entity, Serializable {
     public void interactWith(List<Interactable> object) {
         throw new UnsupportedOperationException("Monsters cannot interact with objects.");
     }
-
     @Override
     public void attack() {
         synchronized (chunk) {

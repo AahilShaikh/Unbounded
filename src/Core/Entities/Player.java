@@ -147,9 +147,6 @@ public class Player implements Entity, Serializable {
                         this.chunk.setTileCopy(currentLoc, AVATAR);
                         return;
                     }
-                    else {
-                        System.out.println("OOPS");
-                    }
                 }
             }
         }
